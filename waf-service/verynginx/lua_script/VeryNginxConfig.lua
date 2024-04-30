@@ -1,7 +1,7 @@
 -- -*- coding: utf-8 -*-
 -- @Date    : 2016-01-02 00:51
 -- @Author  : Alexa (AlexaZhou@163.com)
--- @Link    : 
+-- @Link    :
 -- @Disc    : handle VeryNginx configuration
 
 local _M = {}
@@ -15,7 +15,7 @@ _M["configs"] = {}
 
 _M.configs["config_version"] = "0.36"
 _M.configs["readonly"] = false
-_M.configs["base_uri"] = "/verynginx"
+_M.configs["base_uri"] = "/wafservice"
 _M.configs['dashboard_host'] = ""
 _M.configs['cookie_prefix'] = "verynginx"
 _M.configs["admin"] = {
@@ -24,26 +24,26 @@ _M.configs["admin"] = {
 
 _M.configs['matcher'] = {
     ["all_request"] = {},
-    ["attack_sql_0"] = { 
-        ["Args"] = { 
+    ["attack_sql_0"] = {
+        ["Args"] = {
             ['name_operator'] = "*",
             ['operator'] = "≈",
             ['value']="select.*from",
         },
     },
-    ["attack_backup_0"] = { 
+    ["attack_backup_0"] = {
         ["URI"] = {
             ['operator'] = "≈",
             ['value']="\\.(htaccess|bash_history|ssh|sql)$",
         },
     },
-    ["attack_scan_0"] = { 
+    ["attack_scan_0"] = {
         ["UserAgent"] = {
             ['operator'] = "≈",
             ['value']="(nmap|w3af|netsparker|nikto|fimap|wget)",
         },
     },
-    ["attack_code_0"] = { 
+    ["attack_code_0"] = {
         ["URI"] = {
             ['operator'] = "≈",
             ['value']="\\.(git|svn|\\.)",
@@ -100,13 +100,13 @@ _M.configs["scheme_lock_rule"] = {
 _M.configs["redirect_enable"] = true
 _M.configs["redirect_rule"] = {
     --redirect to a static uri
-    {["matcher"] = 'demo_other_verynginx_uri', ["to_uri"] = "/verynginx/index.html", ["enable"] = true}, 
+    {["matcher"] = 'demo_other_verynginx_uri', ["to_uri"] = "/verynginx/index.html", ["enable"] = true},
 }
 
 _M.configs["uri_rewrite_enable"] = true
 _M.configs["uri_rewrite_rule"] = {
-    --redirect to a Regex generate uri 
-    {["matcher"] = 'demo_verynginx_short_uri', ["replace_re"] = "^/vn/(.*)", ["to_uri"] = "/verynginx/$1", ["enable"] = true}, 
+    --redirect to a Regex generate uri
+    {["matcher"] = 'demo_verynginx_short_uri', ["replace_re"] = "^/vn/(.*)", ["to_uri"] = "/verynginx/$1", ["enable"] = true},
 }
 
 _M.configs["browser_verify_enable"] = true
@@ -188,7 +188,7 @@ end
 
 function _M.version_updater_033( configs )
     local matcher_list = configs['matcher']
-    
+
     for matcher_name,matcher_value in pairs( matcher_list ) do
         for condition_type,condition_value in pairs( matcher_value ) do
             if condition_type == 'Args' and condition_value['name'] ~= nil then
@@ -198,7 +198,7 @@ function _M.version_updater_033( configs )
             end
         end
     end
-    
+
     configs["config_version"] = "0.34"
     return configs
 end
@@ -248,7 +248,7 @@ local json = require "json"
 
 function _M.home_path()
     local current_script_path = debug.getinfo(1, "S").source:sub(2)
-    local home_path = current_script_path:sub( 1, 0 - string.len("/lua_script/VeryNginxConfig.lua") -1 ) 
+    local home_path = current_script_path:sub( 1, 0 - string.len("/lua_script/VeryNginxConfig.lua") -1 )
     return home_path
 end
 
@@ -265,7 +265,7 @@ end
 function _M.load_from_file()
     local config_dump_path = _M.home_path() .. "/configs/config.json"
     local file = io.open( config_dump_path, "r")
-    
+
     if file == nil then
         return json.encode({["ret"]="error",["msg"]="config file not found"})
     end
@@ -285,12 +285,12 @@ function _M.load_from_file()
         --update config version if need
         local loop = true
         while loop do
-            local handle = _M.version_updater[ tmp['config_version'] ] 
+            local handle = _M.version_updater[ tmp['config_version'] ]
             if handle ~= nil then
                 tmp = handle( tmp )
             else
                 loop = false
-            end 
+            end
         end
 
         if tmp['config_version'] ~= _M["configs"]["config_version"] then
@@ -304,12 +304,12 @@ function _M.load_from_file()
         end
 
         return json.encode({["ret"]="success",['config']=_M["configs"]})
-    else 
+    else
         ngx.log(ngx.STDERR,"config.json decode error")
         return json.encode({["ret"]="error",["msg"]="config file decode error, will use default"})
     end
-        
-end 
+
+end
 
 --return a json contain current config items
 function _M.report()
@@ -318,7 +318,7 @@ function _M.report()
 end
 
 function _M.verify()
-    return true  
+    return true
 end
 
 function _M.set()
@@ -331,13 +331,13 @@ function _M.set()
     args, err = ngx.req.get_post_args()
     if not args then
         ngx.say("failed to get post args: ", err)
-        return 
+        return
     end
 
     local new_config_json_escaped_base64 = args['config']
     local new_config_json_escaped = ngx.decode_base64( new_config_json_escaped_base64 )
     --ngx.log(ngx.STDERR,new_config_json_escaped)
-   
+
     local new_config_json = ngx.unescape_uri( new_config_json_escaped )
     --ngx.log(ngx.STDERR,new_config_json)
 
@@ -347,7 +347,7 @@ function _M.set()
         ret = false
         err = "all configs was set to readonly"
     elseif _M.verify( new_config ) == true then
-        ret, err = _M.dump_to_file( new_config ) 
+        ret, err = _M.dump_to_file( new_config )
     end
 
     if ret == true then
@@ -362,21 +362,21 @@ function _M.set_config_metadata( config_table )
     --make sure empty table trans to right type
     local meta_table = {}
     meta_table['__jsontype'] = 'object'
-    
+
     if config_table['matcher'] ~= nil then
         setmetatable( config_table['matcher'], meta_table )
         for key, t in pairs( config_table["matcher"] ) do
             setmetatable( t, meta_table )
         end
     end
-    
+
     if config_table['backend_upstream'] ~= nil then
         setmetatable( config_table['backend_upstream'], meta_table )
         for key, t in pairs( config_table["backend_upstream"] ) do
             setmetatable( t['node'], meta_table )
         end
     end
-    
+
     if config_table['response'] ~= nil then
         setmetatable( config_table['response'], meta_table )
     end
@@ -390,7 +390,7 @@ function _M.dump_to_file( config_table )
 
     local config_data = dkjson.encode( config_table , {indent=true} ) --must use dkjson at here because it can handle the metadata
     local config_dump_path = _M.home_path() .. "/configs/config.json"
-    
+
     --ngx.log(ngx.STDERR,config_dump_path)
     local file, err = io.open( config_dump_path, "w")
     if file ~= nil then

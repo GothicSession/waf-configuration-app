@@ -53,7 +53,7 @@ function _M.filter()
         end
 
         ngx.req.set_uri( path )
-        ngx.var.vn_static_root = VeryNginxConfig.home_path() .."/dashboard"
+        ngx.var.vn_static_root = VeryNginxConfig.home_path() .."/frontend/dist/waf-configuration-app/browser"
         ngx.var.vn_exec_flag = '1'-- use the var as a mark, so that lua can know that's a inside redirect
         util.ngx_ctx_dump()
         return ngx.exec('@vn_static') -- will jump out at the exec
