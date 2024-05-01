@@ -5,6 +5,10 @@ RUN yum clean all && yum update -y  && yum install -y     gcc pcre-devel openssl
 RUN mkdir /code
 COPY ./ /code/
 WORKDIR /code
+
+COPY ./verynginx/frontend/dist/waf-configuration-app/browser/. /opt/verynginx/openresty/nginx/html
+RUN sed -i 's+<base href="/">+<base href="/wafservice/">+g' /opt/verynginx/openresty/nginx/html/index.html
+
 RUN groupadd -r nginx && useradd -r -g nginx nginx
 RUN python install.py install
 

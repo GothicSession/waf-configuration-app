@@ -1,0 +1,42 @@
+<div class="login__form-wrapper">
+  <div class="form__header header">
+    <img src="assets/img/mirea-logo.png" class="header__img">
+    <p class="header__title">WAF Configuration App</p>
+  </div>
+  <form class="login__form" [formGroup]="loginForm" (ngSubmit)="login()">
+    <div class="form__inputs">
+      <tui-input
+        [formControl]="loginForm.controls.loginControl"
+        [tuiTextfieldSize]="'m'"
+        [tuiTextfieldCleaner]="true"
+      >
+        Введите login или email
+        <input
+          autocomplete="email"
+          tuiTextfield
+          type="email"
+        />
+      </tui-input>
+
+      <tui-input
+        [formControl]="loginForm.controls.passwordControl"
+        [tuiTextfieldSize]="'m'"
+        [tuiTextfieldCleaner]="true"
+      >
+        Введите пароль
+        <input
+          autocomplete="password"
+          tuiTextfield
+          type="password"
+        />
+      </tui-input>
+    </div>
+    <button
+      tuiButton
+      type="submit"
+      class="tui-space_right-3 tui-space_bottom-3"
+    >
+      Войти
+    </button>
+  </form>
+</div>
