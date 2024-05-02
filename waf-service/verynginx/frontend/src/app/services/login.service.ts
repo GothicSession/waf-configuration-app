@@ -15,6 +15,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpResponse, HttpEvent } from '@a
 import {Observable, tap} from "rxjs";
 import {CookieService} from "ngx-cookie-service";
 import {LoginResponseInterface} from "../models/login-response.interface";
+import {StatusResponseInterface} from "../models/status-response.interface";
 // import { CustomHttpUrlEncodingCodec } from '../encoder';
 //
 // import { Observable } from 'rxjs';
@@ -141,7 +142,7 @@ export class LoginService {
     Cookie?: string,
     observe?: 'body',
     reportProgress?: boolean,
-  ): Observable<any> {
+  ): Observable<StatusResponseInterface> {
     let headers = this.defaultHeaders;
     if (Authorization !== undefined && Authorization !== null) {
       headers = headers.set('Authorization', String(Authorization));
@@ -161,7 +162,7 @@ export class LoginService {
     // to determine the Content-Type header
     const consumes: string[] = [];
 
-    return this.httpClient.request<any>(
+    return this.httpClient.request<StatusResponseInterface>(
       'get',
       `${this.basePath}/status`,
       {

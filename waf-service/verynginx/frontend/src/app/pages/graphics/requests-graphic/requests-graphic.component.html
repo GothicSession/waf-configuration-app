@@ -1,0 +1,58 @@
+<div class="request">
+  <div class="request__title-wrapper">
+    <div class="request__title">
+      Запросы
+      <button
+        tuiButton
+        [appearance]="isGraphicsRunning ? 'secondary-destructive' : 'primary'"
+        type="button"
+        [size]="'s'"
+        (click)="isGraphicsRunning ? stopGraphic() : startGraphic()"
+      >
+        {{ isGraphicsRunning ? 'Остановить мониторинг' : 'Включить мониторинг'}}
+      </button>
+    </div>
+    <button
+      tuiButton
+      type="button"
+      [size]="'s'"
+      (click)="changeConfig()"
+    >
+      Настроить параметры мониторинга
+    </button>
+  </div>
+  <div>
+    <canvas #chartCanvas width="800" height="400"></canvas>
+  </div>
+</div>
+
+<ng-template
+  let-observer
+  [tuiDialogOptions]="{label: 'Настройки системы мониторинга', size: 's'}"
+  [(tuiDialog)]="open"
+>
+  <form
+    [formGroup]="intervalFormGroup"
+    (ngSubmit)="submitPopup(observer)"
+  >
+    <tui-input
+      [formControl]="intervalFormGroup.controls.intervalControl"
+      tuiAutoFocus
+    >
+      Значение интервала в мс
+    </tui-input>
+    <tui-error
+      [formControl]="intervalFormGroup.controls.intervalControl"
+      [error]="[] | tuiFieldError | async"
+    ></tui-error>
+    <p>
+      <button
+        tuiButton
+        type="submit"
+        [disabled]="!intervalFormGroup.controls.intervalControl.valid"
+      >
+        Сохранить
+      </button>
+    </p>
+  </form>
+</ng-template>

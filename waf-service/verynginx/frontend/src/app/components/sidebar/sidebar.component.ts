@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {TuiAvatarModule, TuiMarkerIconModule} from "@taiga-ui/kit";
 import {TuiSvgModule} from "@taiga-ui/core";
 import {CookieService} from "ngx-cookie-service";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-sidebar',
@@ -11,6 +11,7 @@ import {Router} from "@angular/router";
     TuiAvatarModule,
     TuiSvgModule,
     TuiMarkerIconModule,
+    RouterLink,
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'

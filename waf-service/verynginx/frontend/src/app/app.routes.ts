@@ -3,6 +3,7 @@ import {MainLayoutComponent} from "./layouts/main-layout/main-layout.component";
 import {LoginLayoutComponent} from "./layouts/login-layout/login-layout.component";
 import {CanActivateIsAuthorizedFunction} from "./guards/can-activate-is-authorized-function";
 import {canActivateLoginPageFunction} from "./guards/can-activate-login-page.function";
+import {GraphicsComponent} from "./pages/graphics/graphics.component";
 
 export const routes: Routes = [
   {
@@ -14,6 +15,12 @@ export const routes: Routes = [
     path: 'main',
     component: MainLayoutComponent,
     canActivate: [CanActivateIsAuthorizedFunction],
+    children: [
+      {
+        path: 'graphics',
+        component: GraphicsComponent
+      }
+    ]
   },
   {
     path: 'login',

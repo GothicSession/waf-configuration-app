@@ -1,0 +1,15 @@
+.request {
+  &__title {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #123543;
+    gap: 10px;
+
+    &-wrapper {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+}

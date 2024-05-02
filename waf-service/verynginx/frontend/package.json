@@ -25,6 +25,7 @@
     "@taiga-ui/kit": "^3.76.0",
     "@taiga-ui/styles": "^3.76.0",
     "@tinkoff/ng-dompurify": "4.0.0",
+    "chart.js": "^4.4.2",
     "dompurify": "3.0.6",
     "ngx-cookie-service": "^17.1.0",
     "rxjs": "~7.8.0",
