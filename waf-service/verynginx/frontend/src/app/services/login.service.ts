@@ -16,6 +16,7 @@ import {Observable, tap} from "rxjs";
 import {CookieService} from "ngx-cookie-service";
 import {LoginResponseInterface} from "../models/login-response.interface";
 import {StatusResponseInterface} from "../models/status-response.interface";
+import {ConfigResponseInterface} from "../models/config-response.interface";
 // import { CustomHttpUrlEncodingCodec } from '../encoder';
 //
 // import { Observable } from 'rxjs';
@@ -135,6 +136,42 @@ export class LoginService {
         }
       })
     );
+  }
+
+  public getConfig(
+    Authorization?: string,
+    Cookie?: string,
+    observe?: 'body',
+    reportProgress?: boolean,
+  ): Observable<ConfigResponseInterface> {
+    let headers = this.defaultHeaders;
+    if (Authorization !== undefined && Authorization !== null) {
+      headers = headers.set('Authorization', String(Authorization));
+    }
+    if (Cookie !== undefined && Cookie !== null) {
+      headers = headers.set('Cookie', String(Cookie));
+    }
+
+    // to determine the Accept header
+    let httpHeaderAccepts: string[] = ['application/json'];
+    // const httpHeaderAcceptSelected: string | undefined =
+    //   this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    // if (httpHeaderAcceptSelected != undefined) {
+    //   headers = headers.set('Accept', httpHeaderAcceptSelected);
+    // }
+
+    // to determine the Content-Type header
+    const consumes: string[] = [];
+
+    return this.httpClient.request<ConfigResponseInterface>(
+      'get',
+      `${this.basePath}/config`,
+      {
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress,
+      },
+    )
   }
 
   public getStatus(

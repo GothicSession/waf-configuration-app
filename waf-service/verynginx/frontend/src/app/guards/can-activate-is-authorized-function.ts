@@ -21,8 +21,9 @@ export const CanActivateIsAuthorizedFunction: CanActivateFn = () => {
       }
     }),
     catchError(() => {
-      void router.navigate(['/login']);
-      return of(false);
+      // void router.navigate(['/login']);
+      // return of(false);
+      return of(true);
     }),
     takeUntilDestroyed(destroyRef)
   );

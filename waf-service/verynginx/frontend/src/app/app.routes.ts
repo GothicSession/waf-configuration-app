@@ -4,6 +4,7 @@ import {LoginLayoutComponent} from "./layouts/login-layout/login-layout.componen
 import {CanActivateIsAuthorizedFunction} from "./guards/can-activate-is-authorized-function";
 import {canActivateLoginPageFunction} from "./guards/can-activate-login-page.function";
 import {GraphicsComponent} from "./pages/graphics/graphics.component";
+import {BasicsComponent} from "./pages/basics/basics.component";
 
 export const routes: Routes = [
   {
@@ -19,6 +20,10 @@ export const routes: Routes = [
       {
         path: 'graphics',
         component: GraphicsComponent
+      },
+      {
+        path: 'basics',
+        component: BasicsComponent
       }
     ]
   },

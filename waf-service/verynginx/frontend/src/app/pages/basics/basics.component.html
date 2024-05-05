@@ -1,0 +1,189 @@
+<div class="wrapper">
+  <tui-tabs>
+    <button
+      tuiTab
+      (click)="onClick('matcher')"
+    >
+      Matcher
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('response')"
+    >
+      Response
+    </button>
+  </tui-tabs>
+  <ng-container *ngIf="activeTab === 'matcher'">
+    <div class="config__wrapper">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Request Matcher
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupAddRule()">Добавить правило
+        </button>
+      </div>
+      <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+        <tbody *ngIf="tplData.config as configData">
+        <tr class="tui-table__tr">
+          <th class="tui-table__th">Id</th>
+          <th class="tui-table__th">Имя</th>
+          <th class="tui-table__th">Условие</th>
+          <th class="tui-table__th tui-table__th_last">Действия</th>
+        </tr>
+        <tr class="tui-table__tr" *ngFor="let matcherConfig of configData.matcher | keyvalue; let i = index">
+          <td class="tui-table__td">{{ i }}</td>
+          <td class="tui-table__td"> {{matcherConfig.key}}</td>
+          <td class="tui-table__td">
+            <ng-container *ngFor="let condition of matcherConfig.value | keyvalue">
+              <ng-container *ngTemplateOutlet="conditionTpl; context: {$implicit: condition}">
+              </ng-container>
+            </ng-container>
+          </td>
+          <td class="tui-table__td">
+            <div class="buttons__wrapper">
+              <button
+                tuiButton
+                [appearance]="'primary'"
+                type="button"
+                [size]="'xs'">Редактировать
+              </button>
+              <button
+                tuiButton
+                [appearance]="'secondary-destructive'"
+                type="button"
+                [size]="'xs'">Удалить
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #conditionTpl let-condition>
+  <div class="condition">
+    <span class="condition__title">{{condition.key}} </span><span
+    *ngIf="condition.value?.name_operator">[name {{condition?.value?.name_operator}}
+    ] </span><span>{{condition?.value?.operator}} </span><span> {{condition?.value?.value}}</span>
+  </div>
+</ng-template>
+
+<ng-template
+  let-observer
+  [tuiDialogOptions]="{label: requested === 'add' ? 'Добавить правило' : 'Редактировать правило', size: 's'}"
+  [(tuiDialog)]="open"
+  #dialogTpl
+>
+  <form
+    [formGroup]="editRuleGroup"
+  >
+    <tui-input
+      [formControl]="editRuleGroup.controls.nameControl"
+      tuiAutoFocus
+    >
+      Название
+    </tui-input>
+    <tui-error
+      [formControl]="editRuleGroup.controls.nameControl"
+      [error]="[] | tuiFieldError | async"
+    ></tui-error>
+  </form>
+    <div class="add-condition">
+      <div class="add-condition__type">
+        <tui-select
+          class="tui-space_vertical-4"
+          [tuiTextfieldLabelOutside]="true"
+          [tuiDropdownDirection]="'bottom'"
+          [valueContent]="selectTpl"
+          [(ngModel)]="conditionType"
+        >
+          Выберите тип
+          <tui-data-list-wrapper
+            *tuiDataList
+            [itemContent]="selectTpl"
+            [items]="conditionTypes"
+          ></tui-data-list-wrapper>
+        </tui-select>
+        <div class="type__add" *ngIf="conditionType && getIsRequiredTwoOperators()">
+          Искомое имя {{ conditionType }}
+          <tui-select
+            class="tui-space_vertical-4"
+            [tuiTextfieldLabelOutside]="true"
+            [tuiDropdownDirection]="'bottom'"
+            [valueContent]="selectTpl"
+            [(ngModel)]="valueOperator"
+          >
+            Выберите тип
+            <tui-data-list-wrapper
+              *tuiDataList
+              [itemContent]="selectTpl"
+              [items]="getRequiredValueNameOperatorList()"
+            ></tui-data-list-wrapper>
+          </tui-select>
+          <tui-input
+            [formControl]="editRuleGroup.controls.valueControl"
+          >
+            Значение
+          </tui-input>
+        </div>
+        <div class="type__add" *ngIf="conditionType">
+          Значение {{ conditionType }}
+          <tui-select
+            class="tui-space_vertical-4"
+            [tuiTextfieldLabelOutside]="true"
+            [tuiDropdownDirection]="'bottom'"
+            [valueContent]="selectTpl"
+            [(ngModel)]="value"
+          >
+            Выберите тип
+            <tui-data-list-wrapper
+              *tuiDataList
+              [itemContent]="selectTpl"
+              [items]="getRequiredValueOperatorList()"
+            ></tui-data-list-wrapper>
+          </tui-select>
+          <tui-select
+            *ngIf="conditionType === 'Method'"
+            class="tui-space_vertical-4"
+            [tuiTextfieldLabelOutside]="true"
+            [tuiDropdownDirection]="'bottom'"
+            [valueContent]="selectTpl"
+            [(ngModel)]="method"
+          >
+            Выберите тип
+            <tui-data-list-wrapper
+              *tuiDataList
+              [itemContent]="selectTpl"
+              [items]="methodsList"
+            ></tui-data-list-wrapper>
+          </tui-select>
+          <tui-input
+            *ngIf="conditionType !== 'Method'"
+            [formControl]="editRuleGroup.controls.valueOperatorControl"
+          >
+            Значение
+          </tui-input>
+        </div>
+      </div>
+    </div>
+    <p>
+      <button
+        tuiButton
+        type="submit"
+        (click)="addRule(editRuleGroup.controls.nameControl.value, editRuleGroup.controls.valueOperatorControl.value)"
+      >
+        Сохранить
+      </button>
+    </p>
+</ng-template>
+
+<ng-template #selectTpl let-select>
+  <p>{{select}}</p>
+</ng-template>

@@ -3,19 +3,19 @@
     <tui-marker-icon mode="secondary" [size]="'xxs'" [src]="'tuiIconUser'"></tui-marker-icon>
     <p class="item__title">Admin</p>
   </div>
-  <div class="sidebar__item item">
+  <div class="sidebar__item item" [routerLink]="['basics']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconSettingsLarge'"></tui-svg>
     <p class="item__title">Основные настройки</p>
   </div>
-  <div class="sidebar__item item">
+  <div class="sidebar__item item" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconFileTextLarge'"></tui-svg>
     <p class="item__title">Правила</p>
   </div>
-  <div class="sidebar__item item">
+  <div class="sidebar__item item" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconZoomInLarge'"></tui-svg>
     <p class="item__title">Аудит</p>
   </div>
-  <div class="sidebar__item item" [routerLink]="['graphics']">
+  <div class="sidebar__item item" [routerLink]="['graphics']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconBarChart2Large'"></tui-svg>
     <p class="item__title">Графики</p>
   </div>

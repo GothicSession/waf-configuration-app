@@ -1,0 +1,43 @@
+.wrapper {
+  padding: 16px 32px;
+}
+
+.config {
+  &__title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #123543;
+
+    &-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      align-items: center;
+    }
+  }
+}
+
+.condition {
+  background-color: #d3cfcf;
+  padding: 4px;
+  border-radius: 4px;
+  width: fit-content;
+
+  &__title {
+    font-weight: bold;
+  }
+}
+
+.buttons__wrapper {
+  display: flex;
+  gap: 4px;
+}
+
+.type {
+  &__add {
+    padding: 8px 16px;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 2px solid var(--tui-primary);
+  }
+}
