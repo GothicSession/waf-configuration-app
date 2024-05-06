@@ -80,12 +80,11 @@ export type Matcher = {
   [key in MatcherLabel]?: ArgRule;
 };
 
-type Operator = '≈' | '=' | '!=' | '!≈' | '*';
+export type Operator = '≈' | '=' | '!=' | '!≈' | '*' | 'Exist' | '!Exist';
 
-
-interface ArgRule {
+export interface ArgRule {
   value?: string;
-  operator?: Operator;
+  operator?: Operator | string;
   name_operator?: string;
   name_value?: string;
 }

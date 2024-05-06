@@ -11,6 +11,7 @@ import {catchError} from "rxjs/operators";
 export class ConfigsService {
 
   config$: BehaviorSubject<ConfigResponseInterface | null> = new BehaviorSubject<ConfigResponseInterface | null>(null);
+  sourceConfig?: ConfigResponseInterface | null;
 
   config: ConfigResponseInterface = {
     base_uri: "/verynginx",
@@ -174,48 +175,58 @@ export class ConfigsService {
         return of( this.config)
       })
     ).subscribe((response) => {
+      this.sourceConfig = JSON.parse(JSON.stringify(response));
       this.config$.next(response);
     });
   }
 
-  setMatcherConfig(newMatchersArray: { [key: string]: Matcher }[]): void {
-    const config = this.getConfig(); // Получаем текущую конфигурацию
+  // @ts-ignore
+  saveConfig$(): Observable<any> {
+    if (this.getConfig()) {
+      // @ts-ignore
+      return this._loginService.saveConfig(this.getConfig())
+    }
+  }
+
+  setConfig(config: ConfigResponseInterface): void {
+    this.config$.next(config);
+  }
+
+  setMatcherConfig(newMatcherObj: { [key: string]: Matcher }): void {
+    const config = this.getConfig();
     if (!config) {
       console.error('Config is not set');
       return;
     }
 
     if (!config.matcher) {
-      config.matcher = {}; // Если в конфигурации еще нет matcher, создаем пустой объект
+      config.matcher = {}; // Инициализация matcher, если он еще не инициализирован
     }
 
-    newMatchersArray.forEach((matcherObj) => {
-      Object.entries(matcherObj).forEach(([key, newMatcher]) => {
-        if (config.matcher[key]) {
-          // Если ключ уже существует в matcher, мы дополняем существующий объект
-          Object.entries(newMatcher).forEach(([label, argRule]) => {
+    Object.entries(newMatcherObj).forEach(([key, newMatcher]) => {
+      if (config.matcher[key]) {
+        // Если ключ уже существует в matcher, дополняем существующий объект
+        Object.entries(newMatcher).forEach(([label, argRule]) => {
+          // @ts-ignore
+          if (config.matcher[key][label]) {
+            // Дополняем существующие правила
             // @ts-ignore
-            if (config.matcher[key][label]) {
-              // Если такой label уже есть, дополняем его
-              // @ts-ignore
-              Object.assign(config.matcher[key][label], argRule);
-            } else {
-              // Если label нет, добавляем его
-              // @ts-ignore
-              config.matcher[key][label] = argRule;
-            }
-          });
-        } else {
-          // Если ключа нет, просто добавляем его в matcher
-          config.matcher[key] = newMatcher;
-        }
-      });
+            Object.assign(config.matcher[key][label], argRule);
+          } else {
+            // Если такой label нет, добавляем его
+            // @ts-ignore
+            config.matcher[key][label] = argRule;
+          }
+        });
+      } else {
+        // Если ключа нет, добавляем его в matcher
+        config.matcher[key] = newMatcher;
+      }
     });
 
-    // После изменений обновляем состояние конфигурации
+    // Обновляем состояние конфигурации
     this.config$.next(config);
   }
-
 
   getConfig(): ConfigResponseInterface | null {
     return this.config$.value;

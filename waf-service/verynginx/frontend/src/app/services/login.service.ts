@@ -138,6 +138,23 @@ export class LoginService {
     );
   }
 
+  saveConfig(configData: any): Observable<any> {
+    // Преобразование данных конфигурации в JSON
+    const configJson = JSON.stringify(configData, null, 2);
+
+    // Кодирование специальных символов
+    const configJsonEscaped = encodeURIComponent(configJson);
+
+    // Кодирование в base64
+    const configJsonEscapedBase64 = btoa(configJsonEscaped);
+
+    const body = `config=${configJsonEscapedBase64}`;  // Отправка простой строки
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+
+    // Отправка данных на сервер
+    return this.httpClient.post('./config', body, { headers, responseType: 'text' });
+  }
+
   public getConfig(
     Authorization?: string,
     Cookie?: string,
