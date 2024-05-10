@@ -25,7 +25,7 @@ import {
   ConfigResponseInterface,
   Matcher,
   MatcherLabel,
-  Operator
+  Operator, ResponseTypes
 } from "../../models/config-response.interface";
 import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {TuiActiveZoneModule, TuiAutoFocusModule, TuiObscuredModule} from "@taiga-ui/cdk";
@@ -71,6 +71,9 @@ export class BasicsComponent {
   @ViewChild('dialogTpl')
   dialogTpl!: TemplateRef<void>;
 
+  @ViewChild('dialogResponseTpl')
+  dialogResponseTpl!: TemplateRef<void>;
+
   activeTab: string = 'matcher';
   requested: string = 'add';
   open = false;
@@ -80,6 +83,7 @@ export class BasicsComponent {
   readonly conditionTypes: MatcherLabel[] = [
     'Args', 'URI', 'IP', 'UserAgent', 'Header', 'Host', 'Referer', 'Method', 'Cookie'
   ];
+  readonly contentTypes = ['text/html', 'application/json']
   matcherKeyValues: { key: string, value: any }[] | undefined;
   conditionType = '';
   nameOperator = '';
@@ -195,6 +199,37 @@ export class BasicsComponent {
     this.activeTab = label;
   }
 
+  openResponsePopupRule(requested: string, matcherRuleKey?: string, matcherRuleValue?: any): void {
+    this.requested = requested;
+
+    if (requested === 'edit') {
+      this.matcherKeyValues = this.objectToKeyValuePairs(matcherRuleValue);
+      this.editRuleGroup.controls.nameControl.setValue(matcherRuleKey || '');
+      this.editRuleGroup.controls.nameControl.disable();
+      this.editRuleGroup.controls.valueControl.setValue(matcherRuleValue.body);
+      this.conditionType = matcherRuleValue.content_type;
+    }
+
+    this.dialogs.open(this.dialogResponseTpl, {
+      label: this.requested === 'add' ? 'Добавить правило' : 'Редактировать правило',
+      size: 'm'
+    }).subscribe(() => {
+      }, () => {
+      },
+      () => {
+        this.conditionType = '';
+        this.nameOperator = '';
+        this.operator = '';
+        this.method = '';
+        this.editRuleGroup.controls.valueControl.setValue('');
+        this.editRuleGroup.controls.nameValueControl.setValue('');
+        this.editRuleGroup.controls.nameControl.setValue('');
+        this.editRuleGroup.controls.nameControl.enable();
+        this.matcherKeyValues = undefined;
+      }
+    );
+  }
+
   openPopupRule(requested: string, matcherRuleKey?: string, matcherRuleValue?: any): void {
     this.requested = requested;
 
@@ -264,6 +299,18 @@ export class BasicsComponent {
     }
   }
 
+  addResponse(observer: any, name: string, body: string): void {
+      const responseRule: ResponseTypes = {
+        [name]: {
+          body,
+          content_type: this.conditionType
+        }
+      }
+
+      this._configsService.setResponseConfig(responseRule);
+      observer.complete();
+  }
+
   deleteMatcher(name: string): void {
     const config = this._configsService.getConfig();
 
@@ -277,6 +324,22 @@ export class BasicsComponent {
       }
     } else {
       console.error('Invalid configuration or matcher does not exist.');
+    }
+  }
+
+  deleteResponse(name: string): void {
+    const config = this._configsService.getConfig();
+
+    if (config && config.response) {
+      if (config.response[name]) {
+        delete config.response[name];
+
+        this._configsService.setConfig(config);
+      } else {
+        console.error('No rule found with the name:', name);
+      }
+    } else {
+      console.error('Invalid configuration or response does not exist.');
     }
   }
 

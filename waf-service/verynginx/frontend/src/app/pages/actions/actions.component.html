@@ -1,0 +1,914 @@
+<div class="wrapper">
+  <tui-tabs>
+    <button
+      tuiTab
+      (click)="onClick('scheme')"
+    >
+      Scheme Lock
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('redirect')"
+    >
+      Redirect
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('rewrite')"
+    >
+      URI Rewrite
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('browser')"
+    >
+      Browser Verify
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('frequency')"
+    >
+      Frequency Limit
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('filter')"
+    >
+      Filter
+    </button>
+  </tui-tabs>
+  <ng-container [ngSwitch]="activeTab">
+    <ng-container *ngSwitchCase="'scheme'">
+      <ng-container *ngTemplateOutlet="schemeLockTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'redirect'">
+      <ng-container *ngTemplateOutlet="redirectTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'rewrite'">
+      <ng-container *ngTemplateOutlet="uriRewriteTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'browser'">
+      <ng-container *ngTemplateOutlet="browserTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'frequency'">
+      <ng-container *ngTemplateOutlet="frequencyTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'filter'">
+      <ng-container *ngTemplateOutlet="filterTpl"></ng-container>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #filterTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Filter Limit
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupFilter('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isFilterEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Активирован</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Действие</th>
+        <th class="tui-table__th">Возвращаемый код</th>
+        <th class="tui-table__th">Ответ</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let filterRule of configData.filter_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{filterRule?.enable}}</td>
+        <td class="tui-table__td"> {{filterRule?.matcher}}</td>
+        <td class="tui-table__td"> {{filterRule?.action}}</td>
+        <td class="tui-table__td"> {{ filterRule?.code }} </td>
+        <td class="tui-table__td"> {{ filterRule?.response }}</td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openPopupFilter(
+              'edit',
+              filterRule?.matcher,
+              filterRule?.action,
+              filterRule?.code,
+              !!filterRule.response,
+              filterRule?.response)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteFilterRule(filterRule.matcher || '')">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #browserTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Browser Verify
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupBrowser('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isBrowserEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Активирован</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Verify Type</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let redirectRule of configData.browser_verify_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{redirectRule?.enable}}</td>
+        <td class="tui-table__td"> {{redirectRule?.matcher}}</td>
+        <td class="tui-table__td">
+          <div class="condition" *ngFor="let type of redirectRule.type">
+            <span>
+              {{ type }}
+            </span>
+          </div>
+        </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openPopupBrowser('edit', redirectRule?.matcher, getIsRedirectRuleIncludeType('javascript', redirectRule), getIsRedirectRuleIncludeType('cookie', redirectRule), redirectRule.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteBrowserRule(redirectRule.matcher)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #frequencyTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Frequency Limit
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupFrequency('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isFrequencyEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Активирован</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Время</th>
+        <th class="tui-table__th">Макс. Кол-во Запросов</th>
+        <th class="tui-table__th">Возвращаемый код</th>
+        <th class="tui-table__th">Ответ</th>
+        <th class="tui-table__th">Подсчет отдельно</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let frequencyRule of configData.frequency_limit_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{frequencyRule?.enable}}</td>
+        <td class="tui-table__td"> {{frequencyRule?.matcher}}</td>
+        <td class="tui-table__td"> {{frequencyRule?.time}}</td>
+        <td class="tui-table__td"> {{ frequencyRule?.count }} </td>
+        <td class="tui-table__td"> {{ frequencyRule?.code }} </td>
+        <td class="tui-table__td"> {{ frequencyRule?.response }}</td>
+        <td class="tui-table__td">
+          <div class="condition" *ngFor="let type of frequencyRule.separate">
+            <span>
+              {{ type }}
+            </span>
+          </div>
+        </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openPopupFrequency(
+              'edit',
+              frequencyRule?.matcher,
+              frequencyRule?.count,
+              frequencyRule.time,
+              frequencyRule.enable,
+              frequencyRule.code,
+              frequencyRule.custom_response,
+              frequencyRule.response,
+              getIsFrequencyRuleIncludeType('ip', frequencyRule),
+              getIsFrequencyRuleIncludeType('uri', frequencyRule))"
+            >
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteFrequencyRule(frequencyRule.matcher || '')">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #redirectTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Redirect
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupRedirect('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isRedirectEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Активирован</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">RegEx</th>
+        <th class="tui-table__th">RedirectTo</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let redirectRule of configData.redirect_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{redirectRule?.enable}}</td>
+        <td class="tui-table__td"> {{redirectRule?.matcher}}</td>
+        <td class="tui-table__td"> {{redirectRule?.replace_re}}</td>
+        <td class="tui-table__td"> {{ redirectRule?.to_uri }} </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openPopupRedirect('edit', redirectRule?.matcher, redirectRule?.replace_re, redirectRule.to_uri, redirectRule.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteRedirectRule(redirectRule.matcher)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #uriRewriteTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          URI Rewrite
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupRewrite('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isRewriteEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Активирован</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">RegEx</th>
+        <th class="tui-table__th">Rewrite To</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let rewriteRule of configData.uri_rewrite_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{rewriteRule?.enable}}</td>
+        <td class="tui-table__td"> {{rewriteRule?.matcher}}</td>
+        <td class="tui-table__td"> {{rewriteRule?.replace_re}}</td>
+        <td class="tui-table__td"> {{ rewriteRule?.to_uri }} </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openPopupRewrite('edit', rewriteRule?.matcher, rewriteRule?.replace_re, rewriteRule.to_uri, rewriteRule.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteRewriteRule(rewriteRule.matcher || '')">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #schemeLockTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Scheme Lock
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openPopupRule('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isSchemeLockEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Активирован</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Scheme</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let schemeLockRule of configData.scheme_lock_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{schemeLockRule?.enable}}</td>
+        <td class="tui-table__td"> {{schemeLockRule?.matcher}}</td>
+        <td class="tui-table__td"> {{ schemeLockRule?.scheme }} </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openPopupRule('edit', schemeLockRule?.matcher, schemeLockRule?.scheme, schemeLockRule?.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteSchemeLockRule(schemeLockRule.matcher)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<!-- Dialogs -->
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogFilterTpl
+>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isFilterRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="actionModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="actionList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <ng-container *ngIf="actionModel === 'block'">
+    <tui-select
+      class="tui-space_vertical-4"
+      [tuiTextfieldLabelOutside]="true"
+      [tuiDropdownDirection]="'bottom'"
+      [valueContent]="selectTpl"
+      [(ngModel)]="codeModel"
+    >
+      Выберите тип
+      <tui-data-list-wrapper
+        *tuiDataList
+        [itemContent]="selectTpl"
+        [items]="codeList"
+      ></tui-data-list-wrapper>
+    </tui-select>
+    <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+      <tui-checkbox [formControl]="isCustomResponseEnabled"></tui-checkbox>
+      <span>Custom Response</span>
+    </div>
+    <tui-select
+      *ngIf="isCustomResponseEnabled.value"
+      class="tui-space_vertical-4"
+      [tuiTextfieldLabelOutside]="true"
+      [tuiDropdownDirection]="'bottom'"
+      [valueContent]="selectTpl"
+      [(ngModel)]="customResponseModel"
+    >
+      Custom Response
+      <tui-data-list-wrapper
+        *tuiDataList
+        [itemContent]="selectTpl"
+        [items]="customResponsesNamesList"
+      ></tui-data-list-wrapper>
+    </tui-select>
+  </ng-container>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addFilterRule(matcherModel, actionModel, codeModel, isCustomResponseEnabled.value, customResponseModel, isFilterRuleEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogFrequencyTpl
+>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isFrequencyRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="regExControl"
+  >
+    Request Count
+  </tui-input>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="redirectToControl"
+  >
+    Time
+  </tui-input>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="codeModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="codeList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isCustomResponseEnabled"></tui-checkbox>
+    <span>Custom Response</span>
+  </div>
+  <tui-select
+    *ngIf="isCustomResponseEnabled.value"
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="customResponseModel"
+  >
+    Custom Response
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="customResponsesNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isClientIpEnabled"></tui-checkbox>
+    <span>Client Ip</span>
+  </div>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isUriEnabled"></tui-checkbox>
+    <span>URI</span>
+  </div>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addFrequencyRule(matcherModel, regExControl.value, redirectToControl.value, isFrequencyRuleEnabled.value, codeModel, isCustomResponseEnabled.value, customResponseModel, isClientIpEnabled.value, isUriEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogBrowserTpl
+>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isCookieEnabled"></tui-checkbox>
+    <span>Cookie</span>
+  </div>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isJavaScriptEnabled"></tui-checkbox>
+    <span>JavaScript</span>
+  </div>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isBrowserRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addBrowserRule(matcherModel, isJavaScriptEnabled.value, isCookieEnabled.value, isRedirectRuleEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogRewriteTpl
+>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="regExControl"
+  >
+    RegEx
+  </tui-input>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="redirectToControl"
+  >
+    RewriteTo
+  </tui-input>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isRedirectRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addRewriteRule(matcherModel, regExControl.value, redirectToControl.value, isRedirectRuleEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogRedirectTpl
+>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="regExControl"
+  >
+    RegEx
+  </tui-input>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="redirectToControl"
+  >
+    RedirectTo
+  </tui-input>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isRedirectRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addRedirectRule(matcherModel, regExControl.value, redirectToControl.value,isRedirectRuleEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogSchemeTpl
+>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="schemeModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="schemeList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isSchemeLockRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addSchemeLockRule(matcherModel, schemeModel, isSchemeLockRuleEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template #selectTpl let-select>
+  <p>{{select}}</p>
+</ng-template>
+

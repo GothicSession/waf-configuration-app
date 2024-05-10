@@ -5,6 +5,8 @@ import {CanActivateIsAuthorizedFunction} from "./guards/can-activate-is-authoriz
 import {canActivateLoginPageFunction} from "./guards/can-activate-login-page.function";
 import {GraphicsComponent} from "./pages/graphics/graphics.component";
 import {BasicsComponent} from "./pages/basics/basics.component";
+import {ActionsComponent} from "./pages/actions/actions.component";
+import {BackendComponent} from "./pages/backend/backend.component";
 
 export const routes: Routes = [
   {
@@ -24,6 +26,14 @@ export const routes: Routes = [
       {
         path: 'basics',
         component: BasicsComponent
+      },
+      {
+        path: 'actions',
+        component: ActionsComponent
+      },
+      {
+        path: 'backend',
+        component: BackendComponent
       }
     ]
   },

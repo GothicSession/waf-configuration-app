@@ -13,7 +13,7 @@
       Response
     </button>
   </tui-tabs>
-  <ng-container *ngIf="activeTab === 'matcher'">
+  <ng-container *ngIf="activeTab === 'matcher'; else responseTpl">
     <div class="config__wrapper">
       <div class="kek-class">
         <div class="config__title-wrapper">
@@ -87,6 +87,130 @@
     </div>
   </ng-container>
 </div>
+
+<ng-template #responseTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Response
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openResponsePopupRule('add')">Добавить правило
+        </button>
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Имя</th>
+        <th class="tui-table__th">Content Type</th>
+        <th class="tui-table__th tui-table__th_last">Body</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let responseConfig of configData.response | keyvalue; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{responseConfig.key}}</td>
+        <td class="tui-table__td">
+          {{ responseConfig.value.content_type }}
+        </td>
+        <td class="tui-table__td">
+          {{ responseConfig.value.body }}
+        </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openResponsePopupRule('edit', responseConfig.key, responseConfig.value)">Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteResponse(responseConfig.key)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogResponseTpl
+>
+  <form
+    [formGroup]="editRuleGroup"
+  >
+    <tui-input
+      [formControl]="editRuleGroup.controls.nameControl"
+      tuiAutoFocus
+    >
+      Название
+    </tui-input>
+    <tui-error
+      [style.margin-bottom]="'10px'"
+      [formControl]="editRuleGroup.controls.nameControl"
+      [error]="[] | tuiFieldError | async"
+    ></tui-error>
+  </form>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="conditionType"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="contentTypes"
+    ></tui-data-list-wrapper>
+  </tui-select>
+    Body
+    <tui-input [formControl]="editRuleGroup.controls.valueControl">
+      Body
+    </tui-input>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addResponse(observer, editRuleGroup.controls.nameControl.value, editRuleGroup.controls.valueControl.value)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
 
 <ng-template
   let-observer
@@ -185,7 +309,7 @@
           ></tui-data-list-wrapper>
         </tui-select>
         <tui-input
-          *ngIf="conditionType !== 'Method'"
+          *ngIf="conditionType !== 'Method' && (operator !== 'Существует' && operator !== 'Не существует')"
           [formControl]="editRuleGroup.controls.valueControl"
         >
           Значение

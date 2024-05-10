@@ -1,7 +1,7 @@
 import {DestroyRef, Injectable} from '@angular/core';
 import {LoginService} from "./login.service";
 import {BehaviorSubject, Observable, of} from "rxjs";
-import {ConfigResponseInterface, Matcher} from "../models/config-response.interface";
+import {ConfigResponseInterface, FrequencyRule, Matcher, ResponseTypes} from "../models/config-response.interface";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {catchError} from "rxjs/operators";
 
@@ -166,13 +166,14 @@ export class ConfigsService {
   constructor(
     private readonly _loginService: LoginService,
     private readonly _destroyRef: DestroyRef
-  ) { }
+  ) {
+  }
 
   loadConfig(): void {
     this._loginService.getConfig().pipe(
       takeUntilDestroyed(this._destroyRef),
       catchError(() => {
-        return of( this.config)
+        return of(this.config)
       })
     ).subscribe((response) => {
       this.sourceConfig = JSON.parse(JSON.stringify(response));
@@ -190,6 +191,185 @@ export class ConfigsService {
 
   setConfig(config: ConfigResponseInterface): void {
     this.config$.next(config);
+  }
+
+  addBrowserRule(matcher: string, isJsEnabled: boolean, isCookieEnabled: boolean, enabled: boolean): void {
+    const config = this.getConfig();
+
+    if (!config) {
+      return;
+    }
+
+    const browserRule = {
+      matcher,
+      enable: enabled,
+      type: []
+    }
+
+    if (isJsEnabled) {
+      // @ts-ignore
+      browserRule.type = [...browserRule.type, 'javascript'];
+    }
+
+    if (isCookieEnabled) {
+      // @ts-ignore
+      browserRule.type = [...browserRule.type, 'cookie'];
+    }
+
+    config.browser_verify_rule.push(browserRule);
+
+    // Обновляем состояние конфигурации
+    this.config$.next(config);
+  }
+
+  addFrequencyRule(
+    matcher?: string,
+    requestCount?: string,
+    time?: string,
+    enabled?: boolean,
+    code?: string,
+    customResponseEnable?: boolean,
+    customResponse?: string,
+    isClientIp?: boolean,
+    isUri?: boolean,
+  ): void {
+    const config = this.getConfig();
+
+    if (!config) {
+      return;
+    }
+
+    const frequencyRule: FrequencyRule = {
+      matcher,
+      enable: enabled,
+      code,
+      count: requestCount,
+      time: time,
+      custom_response: customResponseEnable,
+      response: customResponse,
+      separate: []
+    }
+
+    if (isClientIp) {
+      // @ts-ignore
+      frequencyRule.separate = [...frequencyRule.separate, 'ip'];
+    }
+
+    if (isUri) {
+      // @ts-ignore
+      frequencyRule.separate = [...frequencyRule.separate, 'uri'];
+    }
+
+    config.frequency_limit_rule.push(frequencyRule);
+
+    // Обновляем состояние конфигурации
+    this.config$.next(config);
+  }
+
+  addRewriteRule(matcher: string, regEx: string, rewriteTo: string, enabled: boolean): void {
+    const config = this.getConfig();
+
+    if (!config) {
+      return;
+    }
+
+    // Создаем новое правило или обновляем существующее
+    const existingRuleIndex = config.uri_rewrite_rule.findIndex(rule => rule.matcher === matcher);
+
+    if (existingRuleIndex !== -1) {
+      // Обновляем существующее правило
+      config.uri_rewrite_rule[existingRuleIndex] = {matcher, replace_re: regEx, to_uri: rewriteTo, enable: enabled};
+    } else {
+      // Добавляем новое правило
+      config.uri_rewrite_rule.push({matcher, replace_re: regEx, to_uri: rewriteTo, enable: enabled});
+    }
+
+    // Обновляем состояние конфигурации
+    this.config$.next(config);
+  }
+
+  addRedirectRule(matcher: string, regEx: string, redirectTo: string, enabled: boolean): void {
+    const config = this.getConfig();
+
+    if (!config) {
+      return;
+    }
+
+    // Создаем новое правило или обновляем существующее
+    const existingRuleIndex = config.redirect_rule.findIndex(rule => rule.matcher === matcher);
+
+    if (existingRuleIndex !== -1) {
+      // Обновляем существующее правило
+      config.redirect_rule[existingRuleIndex] = {matcher, replace_re: regEx, to_uri: redirectTo, enable: enabled};
+    } else {
+      // Добавляем новое правило
+      config.redirect_rule.push({matcher, replace_re: regEx, to_uri: redirectTo, enable: enabled});
+    }
+
+    // Обновляем состояние конфигурации
+    this.config$.next(config);
+  }
+
+  addFilterRule(
+    matcherName?: string,
+    action?: string,
+    returnCode?: string,
+    customerResponseEnable?: boolean,
+    customerResponse?: string,
+    enabled?: boolean
+  ): void {
+    const config = this.getConfig();
+
+    if (!config) {
+      return;
+    }
+
+    config.filter_rule.push({matcher: matcherName || '', action, enable: enabled, code: returnCode, response: customerResponse, customer_response: customerResponseEnable});
+
+    // Обновляем состояние конфигурации
+    this.config$.next(config);
+  }
+
+  addSchemeLockRule(matcher: string, scheme: string, enabled: boolean): void {
+    const config = this.getConfig();
+
+    if (!config) {
+      return;
+    }
+
+    // Создаем новое правило или обновляем существующее
+    const existingRuleIndex = config.scheme_lock_rule.findIndex(rule => rule.matcher === matcher);
+
+    if (existingRuleIndex !== -1) {
+      // Обновляем существующее правило
+      config.scheme_lock_rule[existingRuleIndex] = {matcher, scheme, enable: enabled};
+    } else {
+      // Добавляем новое правило
+      config.scheme_lock_rule.push({matcher, scheme, enable: enabled});
+    }
+
+    // Обновляем состояние конфигурации
+    this.config$.next(config);
+  }
+
+  setResponseConfig(newResponseRule: ResponseTypes): void {
+    const config = this.getConfig();
+    if (!config) {
+      console.error('Config is not set');
+      return;
+    }
+
+    // Создаем копию конфигурации для изменения
+    const updatedConfig = {...config};
+
+    // Обновляем или добавляем правила ответа
+    updatedConfig.response = {
+      ...updatedConfig.response,
+      ...newResponseRule,
+    };
+
+    // Обновляем состояние конфигурации
+    this.config$.next(updatedConfig);
   }
 
   setMatcherConfig(newMatcherObj: { [key: string]: Matcher }): void {

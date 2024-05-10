@@ -16,11 +16,11 @@ export interface ConfigResponseInterface {
   filter_rule: FilterRule[];
   summary_request_enable: boolean;
   scheme_lock_enable: boolean;
-  frequency_limit_rule: any[]; // Дополнительно следует уточнить структуру
+  frequency_limit_rule: FrequencyRule[]; // Дополнительно следует уточнить структуру
   backend_upstream: any; // Дополнительно следует уточнить структуру
   redirect_rule: RedirectRule[];
   config_version: string;
-  browser_verify_rule: any[]; // Дополнительно следует уточнить структуру
+  browser_verify_rule: BrowserRule[]; // Дополнительно следует уточнить структуру
   browser_verify_enable: boolean;
   proxy_pass_rule: any[]; // Дополнительно следует уточнить структуру
   response: ResponseTypes;
@@ -40,35 +40,52 @@ interface Admin {
 
 interface RewriteRule {
   enable: boolean;
-  replace_re: string;
-  to_uri: string;
-  matcher: string;
+  replace_re?: string;
+  to_uri?: string;
+  matcher?: string;
+}
+
+export interface BrowserRule {
+  enable: boolean;
+  matcher: string,
+  type: string[]
+}
+
+export interface FrequencyRule {
+  code?: string,
+  count?: string,
+  custom_response?: boolean,
+  enable?: boolean,
+  matcher?: string,
+  response?: string,
+  time?: string,
+  separate: string[]
 }
 
 interface FilterRule {
-  matcher: string;
-  enable: boolean;
-  action: 'accept' | 'block';
+  matcher?: string;
+  enable?: boolean;
+  action?: 'accept' | 'block' | string;
   code?: string;
+  customer_response?: boolean;
+  response?: string;
 }
 
 interface RedirectRule {
   matcher: string;
   to_uri: string;
+  replace_re?: string;
   enable: boolean;
 }
 
-interface ResponseTypes {
-  demo_response_html: ResponseDetail;
-  demo_response_json: ResponseDetail;
-}
+export type ResponseTypes = { [key: string]: ResponseDetail };
 
 interface ResponseDetail {
   content_type: string;
   body: string;
 }
 
-interface SchemeLockRule {
+export interface SchemeLockRule {
   scheme: string;
   enable: boolean;
   matcher: string;

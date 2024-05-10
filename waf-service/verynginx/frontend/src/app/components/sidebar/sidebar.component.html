@@ -7,13 +7,13 @@
     <tui-svg [src]="'tuiIconSettingsLarge'"></tui-svg>
     <p class="item__title">Основные настройки</p>
   </div>
-  <div class="sidebar__item item" [routerLinkActive]="'chosen'">
+  <div class="sidebar__item item" [routerLink]="['actions']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconFileTextLarge'"></tui-svg>
-    <p class="item__title">Правила</p>
+    <p class="item__title">Custom Actions</p>
   </div>
-  <div class="sidebar__item item" [routerLinkActive]="'chosen'">
+  <div class="sidebar__item item" [routerLink]="['backend']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconZoomInLarge'"></tui-svg>
-    <p class="item__title">Аудит</p>
+    <p class="item__title">Backend</p>
   </div>
   <div class="sidebar__item item" [routerLink]="['graphics']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconBarChart2Large'"></tui-svg>
