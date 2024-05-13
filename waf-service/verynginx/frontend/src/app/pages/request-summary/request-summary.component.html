@@ -1,0 +1,77 @@
+<div class="page" id="page_summary">
+  <div class="summary_url_table">
+    <!-- Single button -->
+    <div>
+      <div id="summary_title">
+        Request Summary
+      </div>
+
+      <div id="summary_action_bar">
+        <div style="display:inline-block;">
+          <div id="summary_filter_label" >Filter</div>
+          <input id="summary_filter_input" type="text" class="form-control" oninput="data_stat.search(this.value)" placeholder="try input a URI...">
+        </div>
+
+        <div class="pull-right" >
+          <div id="summary_control_label" >Data Type</div>
+
+          <div class="btn-group">
+            <div class="btn-group">
+              <button type="button" style="width:120px;" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="def_btn">All<span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li ><a href="#" title="all request summary" id="summary_data_all" onclick="data_stat.tab_switch(this)">All</a></li>
+                <li ><a href="#" title="temporary request summary" id="summary_data_temporary" onclick="data_stat.tab_switch(this)">Temporary</a></li>
+              </ul>
+            </div>
+            <button type="button" class="btn btn-default" id="summary_data_refresh" onclick="data_stat.get_data()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+            <button type="button" class="btn btn-default" id="summary_data_refresh" onclick="data_stat.clear_data()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="summary_type_note" style="display:none">
+      <span>Notice: The temporary summary will be clead periodically.</span>
+    </div>
+
+    <div class="summary_sub_title">
+      Collected
+    </div>
+    <table class="table table-hover table-bordered display" id="summary_matched_table">
+      <thead>
+      <tr>
+        <th>Index</th>
+        <th>Collect Name</th>
+        <th>Count</th>
+        <th>Size(Bytes)</th>
+        <th>Avg size(Bytes)</th>
+        <th>Success rate</th>
+        <th>Time(s)</th>
+        <th>Avg time(s)</th>
+      </tr>
+      </thead>
+      <tbody id="matched_details">
+      </tbody>
+    </table>
+
+    <div class="summary_sub_title">
+      Others
+    </div>
+    <table class="table table-hover table-bordered display" id="summary_unmatched_table">
+      <thead>
+      <tr>
+        <th>Index</th>
+        <th>URI</th>
+        <th>Count</th>
+        <th>Size(Bytes)</th>
+        <th>Avg size(Bytes)</th>
+        <th>Success rate</th>
+        <th>Time(s)</th>
+        <th>Avg time(s)</th>
+      </tr>
+      </thead>
+      <tbody id="unmatched_details">
+      </tbody>
+    </table>
+  </div>
+</div>

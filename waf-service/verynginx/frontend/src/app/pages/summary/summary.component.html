@@ -1,0 +1,176 @@
+<div class="wrapper" *ngIf="{config: config$ | async} as tplData">
+  <tui-tabs>
+    <button
+      tuiTab
+      (click)="onClick('general')"
+    >
+      General
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('collect')"
+    >
+      Collect
+    </button>
+  </tui-tabs>
+  <ng-container *ngIf="activeTab === 'general'; else collectTpl">
+    <div class="config__wrapper">
+      <div class="kek-class">
+        <div class="config__title-wrapper">
+          <p class="config__title">
+            General
+          </p>
+          <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'s'"
+              (click)="resetConfig()">Отменить изменения
+            </button>
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'s'"
+              (click)="saveConfig()">Сохранить изменения
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="config__checkbox"><tui-checkbox [formControl]="isEnableSummary"></tui-checkbox> Включен Summary</div>
+      <div class="config__checkbox"><tui-checkbox [formControl]="isEnableLogRequest"></tui-checkbox> Log Request with host info</div>
+      <p class="config__title config__title--sub">
+        Summary data group
+      </p>
+      <div class="config__checkbox"><tui-checkbox [formControl]="isEnablePersistent"></tui-checkbox> Включен Persistent </div>
+      <div class="config__checkbox"><tui-checkbox [formControl]="isEnableTemporary"></tui-checkbox> Включен Temporary </div>
+      <tui-input [style.width]="'50%'" [formControl]="temporaryPeriod" [style.margin-top]="'1rem'">
+        Temporary second in s
+      </tui-input>
+      <button
+        [style.margin-top]="'1rem'"
+        tuiButton
+        (click)="saveChanges()"
+      >
+        Сохранить
+      </button>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #collectTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Collect
+        </p>
+        <div class="config__checkbox"><tui-checkbox [formControl]="isEnabledCollect"></tui-checkbox> Включен</div>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openCollectPopup('add')">Добавить правило
+        </button>
+        <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+          <button
+            tuiButton
+            [appearance]="'secondary-destructive'"
+            type="button"
+            [size]="'s'"
+            (click)="resetConfig()">Отменить изменения
+          </button>
+          <button
+            tuiButton
+            [appearance]="'primary'"
+            type="button"
+            [size]="'s'"
+            (click)="saveConfig()">Сохранить изменения
+          </button>
+        </div>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Включен</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Collect Name</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let matcherConfig of configData.summary_collect_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{matcherConfig.enable}}</td>
+        <td class="tui-table__td"> {{matcherConfig.matcher}}</td>
+        <td class="tui-table__td"> {{matcherConfig.collect_name}}</td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openCollectPopup('edit', matcherConfig?.matcher, matcherConfig.enable, matcherConfig?.collect_name)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteSummaryCollectRule(i)">
+              Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogCollectTpl
+>
+  <div [style.display]="'flex'" [style.gap]="'8px'" [style.align-items]="'center'">
+    <tui-checkbox [formControl]="isEnableCollectRule"></tui-checkbox> Включен
+  </div>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="collectNameControl"
+  >
+    Collect Name
+  </tui-input>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addRule(this.isEnableCollectRule.value, this.matcherModel, this.collectNameControl.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template #selectTpl let-select>
+  <p>{{select}}</p>
+</ng-template>

@@ -7,6 +7,9 @@ import {GraphicsComponent} from "./pages/graphics/graphics.component";
 import {BasicsComponent} from "./pages/basics/basics.component";
 import {ActionsComponent} from "./pages/actions/actions.component";
 import {BackendComponent} from "./pages/backend/backend.component";
+import {SummaryComponent} from "./pages/summary/summary.component";
+import {SystemComponent} from "./pages/system/system.component";
+import {RequestSummaryComponent} from "./pages/request-summary/request-summary.component";
 
 export const routes: Routes = [
   {
@@ -34,6 +37,18 @@ export const routes: Routes = [
       {
         path: 'backend',
         component: BackendComponent
+      },
+      {
+        path: 'summary',
+        component: SummaryComponent
+      },
+      {
+        path: 'system',
+        component: SystemComponent
+      },
+      {
+        path: 'requests',
+        component: RequestSummaryComponent
       }
     ]
   },

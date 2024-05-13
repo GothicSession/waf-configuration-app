@@ -15,7 +15,20 @@ export class ConfigsService {
 
   config: ConfigResponseInterface = {
     base_uri: "/verynginx",
-    static_file_rule: [],
+    static_file_rule: [
+      {
+        enable: true,
+        matcher: "attack_code_0",
+        root: "/asdas/wafs",
+        expires: "1s"
+      },
+      {
+        enable: true,
+        matcher: "all_request",
+        root: "/asdfag/wgfasd",
+        expires: "1h"
+      }
+    ],
     filter_enable: true,
     summary_temporary_period: 60,
     frequency_limit_enable: true,
@@ -75,7 +88,27 @@ export class ConfigsService {
     summary_request_enable: true,
     scheme_lock_enable: false,
     frequency_limit_rule: [],
-    backend_upstream: {},
+    backend_upstream: {
+      asdasdas: {
+        method: 'random',
+        node: {}
+      },
+      werffas: {
+        method: "random",
+        node: {}
+      },
+      test: {
+        method: "random",
+        node: {
+          elena: {
+            scheme: "http",
+            host: "127.0.0.1",
+            port: "8080",
+            weight: "10"
+          }
+        }
+      }
+    },
     redirect_rule: [
       {
         matcher: "demo_other_verynginx_uri",
@@ -86,7 +119,14 @@ export class ConfigsService {
     config_version: "0.36",
     browser_verify_rule: [],
     browser_verify_enable: true,
-    proxy_pass_rule: [],
+    proxy_pass_rule: [
+      {
+        enable: true,
+        matcher: "all_request",
+        upstream: "asdasdas",
+        proxy_host: "asdasdasd"
+      }
+    ],
     response: {
       demo_response_html: {
         content_type: "text/html",
@@ -159,9 +199,19 @@ export class ConfigsService {
     dashboard_host: "",
     uri_rewrite_enable: true,
     readonly: false,
-    summary_collect_rule: []
+    summary_collect_rule: [
+      {
+        enable: true,
+        matcher: "all_request",
+        collect_name: "фывфывф"
+      },
+      {
+        enable: true,
+        matcher: "verynginx",
+        collect_name: "aDsa"
+      }
+    ]
   };
-
 
   constructor(
     private readonly _loginService: LoginService,

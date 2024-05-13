@@ -16,7 +16,7 @@ import {Observable, tap} from "rxjs";
 import {CookieService} from "ngx-cookie-service";
 import {LoginResponseInterface} from "../models/login-response.interface";
 import {StatusResponseInterface} from "../models/status-response.interface";
-import {ConfigResponseInterface} from "../models/config-response.interface";
+import {ConfigResponseInterface, SummaryResponse} from "../models/config-response.interface";
 // import { CustomHttpUrlEncodingCodec } from '../encoder';
 //
 // import { Observable } from 'rxjs';
@@ -153,6 +153,11 @@ export class LoginService {
 
     // Отправка данных на сервер
     return this.httpClient.post('./config', body, { headers, responseType: 'text' });
+  }
+
+  getSummary(): Observable<SummaryResponse> {
+    // Отправка данных на сервер
+    return this.httpClient.get<SummaryResponse>('./summary?type=long');
   }
 
   public getConfig(

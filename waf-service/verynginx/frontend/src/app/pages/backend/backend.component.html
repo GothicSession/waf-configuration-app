@@ -1,1 +1,396 @@
-<p>backend works!</p>
+<div class="wrapper" *ngIf="{config: config$ | async} as tplData">
+  <tui-tabs>
+    <button
+      tuiTab
+      (click)="activeTab = 'proxy'"
+    >
+      Proxy Pass
+    </button>
+    <button
+      tuiTab
+      (click)="activeTab = 'static'"
+    >
+      Static File
+    </button>
+  </tui-tabs>
+  <div class="config__wrapper" *ngIf="activeTab === 'proxy'; else staticFileTpl">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Proxy Pass
+        </p>
+        <tui-checkbox
+          [formControl]="isProxyPassEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <p class="config__title">
+      Up Stream
+      <button
+        tuiButton
+        [appearance]="'primary'"
+        type="button"
+        [size]="'s'"
+        (click)="openBackendUpstreamPopupRule('add')">Добавить правило
+      </button>
+    </p>
+    <table class="tui-table">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Имя</th>
+        <th class="tui-table__th">Method</th>
+        <th class="tui-table__th">Nodes</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let backendUpstream of configData.backend_upstream | keyvalue; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{backendUpstream?.key}}</td>
+        <td class="tui-table__td"> {{backendUpstream?.value?.method}}</td>
+        <td class="tui-table__td">
+          <ng-container *ngFor="let node of backendUpstream.value.node | keyvalue">
+            <ng-container
+              *ngTemplateOutlet="nodeTpl; context: {node: node, popup: false, matcher: undefined}">
+            </ng-container>
+          </ng-container>
+        </td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openBackendUpstreamPopupRule('edit', backendUpstream.value.node, backendUpstream?.key,backendUpstream?.value?.method)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteBackendUpstream(backendUpstream?.key)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <p class="config__title">
+      Proxy Pass
+      <button
+        tuiButton
+        [appearance]="'primary'"
+        type="button"
+        [size]="'s'"
+        (click)="openProxyPassRulePopup('add')">Добавить правило
+      </button>
+    </p>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config?.proxy_pass_rule">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Upstream</th>
+        <th class="tui-table__th">Proxy Host</th>
+        <th class="tui-table__th">Enabled</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let rule of tplData.config?.proxy_pass_rule; let i = index">
+        <td class="tui-table__td">{{ rule.matcher }}</td>
+        <td class="tui-table__td">{{ rule.upstream }}</td>
+        <td class="tui-table__td">{{ rule.proxy_host }}</td>
+        <td class="tui-table__td">{{ rule.enable }}</td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openProxyPassRulePopup('edit', rule.matcher, rule.upstream, rule.proxy_host, rule.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteProxyPassStream(i)">
+              Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #staticFileTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Static File
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openStaticFilePopup('add')">Добавить правило
+        </button>
+        <tui-checkbox
+          [formControl]="isStaticFileEnabled"
+        ></tui-checkbox>
+        Включен
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Включен</th>
+        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Document Root</th>
+        <th class="tui-table__th">Expires</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let backendUpstream of configData.static_file_rule; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{backendUpstream?.enable}}</td>
+        <td class="tui-table__td"> {{backendUpstream?.matcher}}</td>
+        <td class="tui-table__td"> {{backendUpstream?.root}}</td>
+        <td class="tui-table__td"> {{backendUpstream?.expires}}</td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openStaticFilePopup('edit', backendUpstream?.matcher, backendUpstream.root, backendUpstream?.expires, backendUpstream?.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteStaticFileStream(i)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogBackendUpstreamTpl
+>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="upstreamName"
+  >
+    Имя
+  </tui-input>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="methodModel"
+  >
+    Выберите тип
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="methodList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <ng-container *ngFor="let node of nodeList | keyvalue">
+    <ng-container
+      *ngTemplateOutlet="nodeTpl; context: {node: node, popup: false, matcher: undefined}">
+    </ng-container>
+  </ng-container>
+  <div>
+    <tui-input [formControl]="nodeNameControl">
+      Node Name
+    </tui-input>
+    <tui-select
+      class="tui-space_vertical-4"
+      [tuiTextfieldLabelOutside]="true"
+      [tuiDropdownDirection]="'bottom'"
+      [valueContent]="selectTpl"
+      [(ngModel)]="schemeModel"
+    >
+      Выберите тип
+      <tui-data-list-wrapper
+        *tuiDataList
+        [itemContent]="selectTpl"
+        [items]="schemesList"
+      ></tui-data-list-wrapper>
+    </tui-select>
+    <tui-input [style.margin-bottom]="'1rem'" [formControl]="ipControl">
+      Ip
+    </tui-input>
+    <tui-input [style.margin-bottom]="'1rem'" [formControl]="portControl">
+      Port
+    </tui-input>
+    <tui-input [style.margin-bottom]="'1rem'" [formControl]="weightControl">
+      Weight
+    </tui-input>
+  </div>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addRule(upstreamName.value, methodModel, nodeNameControl.value, schemeModel, ipControl.value, portControl.value, weightControl.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogProxyPassTpl
+>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isProxyPassRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите Matcher
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="upStreamModel"
+  >
+    Выберите Matcher
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="upStreamList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-input [formControl]="proxyHostControl">
+    Proxy Host
+  </tui-input>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addProxyPassRule(matcherModel, upStreamModel, proxyHostControl.value, isProxyPassRuleEnabled.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogStaticFileTpl
+>
+  <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
+    <tui-checkbox [formControl]="isStaticFileRuleEnabled"></tui-checkbox>
+    <span>Включено</span>
+  </div>
+  <tui-select
+    class="tui-space_vertical-4"
+    [tuiTextfieldLabelOutside]="true"
+    [tuiDropdownDirection]="'bottom'"
+    [valueContent]="selectTpl"
+    [(ngModel)]="matcherModel"
+  >
+    Выберите Matcher
+    <tui-data-list-wrapper
+      *tuiDataList
+      [itemContent]="selectTpl"
+      [items]="matcherNamesList"
+    ></tui-data-list-wrapper>
+  </tui-select>
+  <tui-input [formControl]="rootControl" [style.margin-bottom]="'1rem'">
+    Root
+  </tui-input>
+  <tui-input [formControl]="expiresControl" [style.margin-bottom]="'1rem'">
+    Expires
+  </tui-input>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addStaticFileRule(matcherModel, rootControl?.value, expiresControl?.value, isStaticFileRuleEnabled?.value , observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
+<ng-template #nodeTpl let-node="node" let-popup="popup" let-upstream="upstream">
+  <div class="condition" [style.margin-bottom]="'1rem'">
+    <span class="condition__title">{{node?.key}} </span>
+    <span>{{node?.value?.scheme}}://{{node?.value?.host}}:{{node?.value?.port}};</span>
+    <span>weight:{{node?.value?.weight}}</span>
+    <tui-svg class="delete-btn" *ngIf="popup" [src]="'tuiIconX'"
+             (click)="deleteBackendUpStreamRule(node.key, node.value, upstream)">
+    </tui-svg>
+  </div>
+</ng-template>
+
+<ng-template #selectTpl let-select>
+  <p>{{select}}</p>
+</ng-template>

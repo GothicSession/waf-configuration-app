@@ -1,0 +1,78 @@
+.wrapper {
+  padding: 16px 32px;
+}
+
+.config {
+  &__title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #123543;
+
+    &--sub {
+      font-size: 20px;
+    }
+  }
+}
+
+.kek-class {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttons__wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.btn__wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+}
+
+.wrapper {
+  padding: 16px 32px;
+}
+
+.config {
+  &__checkbox {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #123543;
+
+    &--sub {
+      font-size: 20px;
+    }
+
+    &-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      align-items: center;
+    }
+  }
+}
+
+.buttons__wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.btn__wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.field-large {
+  min-height: 80vh;
+  width: 800px;
+}
+

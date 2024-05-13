@@ -1,0 +1,194 @@
+<div class="wrapper" *ngIf="{config: config$ | async} as tplData">
+  <tui-tabs>
+    <button
+      tuiTab
+      (click)="onClick('general')"
+    >
+      General
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('user')"
+    >
+      User
+    </button>
+    <button
+      tuiTab
+      (click)="onClick('configuration')"
+    >
+      All Configuration
+    </button>
+  </tui-tabs>
+  <ng-container [ngSwitch]="activeTab">
+    <ng-container *ngSwitchCase="'general'">
+      <ng-container *ngTemplateOutlet="generalTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'user'">
+      <ng-container *ngTemplateOutlet="userTpl"></ng-container>
+    </ng-container>
+    <ng-container *ngSwitchCase="'configuration'">
+      <ng-container *ngTemplateOutlet="configurationTpl"></ng-container>
+    </ng-container>
+  </ng-container>
+</div>
+
+<ng-template #configurationTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          Все настройки
+        </p>
+      </div>
+    </div>
+    <div class="all-configuration">
+      <tui-textarea [formControl]="allConfigurationControl" class="tui-space_bottom-4 field-large">Все настройки</tui-textarea>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #generalTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          General
+        </p>
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <p class="config__title config__title--sub">
+      Контрольная панель
+    </p>
+    <tui-input [formControl]="baseUri" [style.margin-bottom]="'1rem'" [style.width]="'50%'">Базовый Uri</tui-input>
+    <tui-input [formControl]="hostLimit" [style.margin-bottom]="'1rem'" [style.width]="'50%'">Host Limit</tui-input>
+    <tui-input [formControl]="cookiePrefix" [style.margin-bottom]="'1rem'" [style.width]="'50%'">Cookie префикс
+    </tui-input>
+    <button
+      [style.margin-top]="'1rem'"
+      tuiButton
+      (click)="saveControl()"
+    >
+      Сохранить
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #userTpl>
+  <div class="config__wrapper">
+    <div class="kek-class">
+      <div class="config__title-wrapper">
+        <p class="config__title">
+          User
+        </p>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="openUserPopup('add')">Добавить правило
+        </button>
+      </div>
+      <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
+        <button
+          tuiButton
+          [appearance]="'secondary-destructive'"
+          type="button"
+          [size]="'s'"
+          (click)="resetConfig()">Отменить изменения
+        </button>
+        <button
+          tuiButton
+          [appearance]="'primary'"
+          type="button"
+          [size]="'s'"
+          (click)="saveConfig()">Сохранить изменения
+        </button>
+      </div>
+    </div>
+    <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
+      <tbody *ngIf="tplData.config as configData">
+      <tr class="tui-table__tr">
+        <th class="tui-table__th">Id</th>
+        <th class="tui-table__th">Включен</th>
+        <th class="tui-table__th">Логин</th>
+        <th class="tui-table__th">Пароль</th>
+        <th class="tui-table__th tui-table__th_last">Действия</th>
+      </tr>
+      <tr class="tui-table__tr" *ngFor="let backendUpstream of configData.admin; let i = index">
+        <td class="tui-table__td">{{ i }}</td>
+        <td class="tui-table__td"> {{backendUpstream?.enable}}</td>
+        <td class="tui-table__td"> {{backendUpstream?.user}}</td>
+        <td class="tui-table__td"> {{backendUpstream?.password}}</td>
+        <td class="tui-table__td">
+          <div class="buttons__wrapper">
+            <button
+              tuiButton
+              [appearance]="'primary'"
+              type="button"
+              [size]="'xs'"
+              (click)="openUserPopup('edit', backendUpstream.user, backendUpstream.password, backendUpstream.enable)">
+              Редактировать
+            </button>
+            <button
+              tuiButton
+              [appearance]="'secondary-destructive'"
+              type="button"
+              [size]="'xs'"
+              (click)="deleteUser(i)">Удалить
+            </button>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template
+  let-observer
+  [(tuiDialog)]="open"
+  #dialogUserTpl
+>
+  <div [style.display]="'flex'" [style.gap]="'8px'" [style.align-items]="'center'">
+    <tui-checkbox [formControl]="isEnableUser"></tui-checkbox>
+    Включен
+  </div>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="userControl"
+  >
+    Логин
+  </tui-input>
+  <tui-input
+    [style.margin-bottom]="'1rem'"
+    [formControl]="passwordControl"
+  >
+    Пароль
+  </tui-input>
+  <p>
+    <button
+      tuiButton
+      type="submit"
+      (click)="addUser(userControl.value, passwordControl.value, isEnableUser.value, observer)"
+    >
+      Сохранить
+    </button>
+  </p>
+</ng-template>
+
