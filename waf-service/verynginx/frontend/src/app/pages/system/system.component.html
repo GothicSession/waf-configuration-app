@@ -4,19 +4,19 @@
       tuiTab
       (click)="onClick('general')"
     >
-      General
+      Общие
     </button>
     <button
       tuiTab
       (click)="onClick('user')"
     >
-      User
+      Админы
     </button>
     <button
       tuiTab
       (click)="onClick('configuration')"
     >
-      All Configuration
+      Конфигурация
     </button>
   </tui-tabs>
   <ng-container [ngSwitch]="activeTab">
@@ -37,7 +37,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Все настройки
+          Вся конфигурация
         </p>
       </div>
     </div>
@@ -52,7 +52,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          General
+          Общие
         </p>
       </div>
       <div class="btn__wrapper" *ngIf="isChangedFirstConfig">
@@ -94,7 +94,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          User
+          Админы
         </p>
         <button
           tuiButton

@@ -4,37 +4,37 @@
       tuiTab
       (click)="onClick('scheme')"
     >
-      Scheme Lock
+      Блокировка схем
     </button>
     <button
       tuiTab
       (click)="onClick('redirect')"
     >
-      Redirect
+      Перенаправление
     </button>
     <button
       tuiTab
       (click)="onClick('rewrite')"
     >
-      URI Rewrite
+      Перезапись URI
     </button>
     <button
       tuiTab
       (click)="onClick('browser')"
     >
-      Browser Verify
+      Проверка Браузера
     </button>
     <button
       tuiTab
       (click)="onClick('frequency')"
     >
-      Frequency Limit
+      Лимит Частоты
     </button>
     <button
       tuiTab
       (click)="onClick('filter')"
     >
-      Filter
+      Фильтр
     </button>
   </tui-tabs>
   <ng-container [ngSwitch]="activeTab">
@@ -100,7 +100,7 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Активирован</th>
-        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Сопоставитель</th>
         <th class="tui-table__th">Действие</th>
         <th class="tui-table__th">Возвращаемый код</th>
         <th class="tui-table__th">Ответ</th>
@@ -149,7 +149,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Browser Verify
+          Проверка Браузера
         </p>
         <button
           tuiButton
@@ -185,8 +185,8 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Активирован</th>
-        <th class="tui-table__th">Matcher</th>
-        <th class="tui-table__th">Verify Type</th>
+        <th class="tui-table__th">Сопоставитель</th>
+        <th class="tui-table__th">Тип проверки</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let redirectRule of configData.browser_verify_rule; let i = index">
@@ -266,7 +266,7 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Активирован</th>
-        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Сопоставитель</th>
         <th class="tui-table__th">Время</th>
         <th class="tui-table__th">Макс. Кол-во Запросов</th>
         <th class="tui-table__th">Возвращаемый код</th>
@@ -330,7 +330,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Redirect
+          Перенаправление
         </p>
         <button
           tuiButton
@@ -366,9 +366,9 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Активирован</th>
-        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Сопоставитель</th>
         <th class="tui-table__th">RegEx</th>
-        <th class="tui-table__th">RedirectTo</th>
+        <th class="tui-table__th">Перенаправить на</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let redirectRule of configData.redirect_rule; let i = index">
@@ -407,7 +407,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          URI Rewrite
+          Перезапись URI
         </p>
         <button
           tuiButton
@@ -443,9 +443,9 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Активирован</th>
-        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Сопоставитель</th>
         <th class="tui-table__th">RegEx</th>
-        <th class="tui-table__th">Rewrite To</th>
+        <th class="tui-table__th">Перезапись на</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let rewriteRule of configData.uri_rewrite_rule; let i = index">
@@ -484,7 +484,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Scheme Lock
+          Блокировка схем
         </p>
         <button
           tuiButton
@@ -520,8 +520,8 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Активирован</th>
-        <th class="tui-table__th">Matcher</th>
-        <th class="tui-table__th">Scheme</th>
+        <th class="tui-table__th">Сопоставитель</th>
+        <th class="tui-table__th">Схема</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let schemeLockRule of configData.scheme_lock_rule; let i = index">
@@ -610,7 +610,7 @@
     </tui-select>
     <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
       <tui-checkbox [formControl]="isCustomResponseEnabled"></tui-checkbox>
-      <span>Custom Response</span>
+      <span>Пользовательский ответ</span>
     </div>
     <tui-select
       *ngIf="isCustomResponseEnabled.value"
@@ -620,7 +620,7 @@
       [valueContent]="selectTpl"
       [(ngModel)]="customResponseModel"
     >
-      Custom Response
+      Пользовательский ответ
       <tui-data-list-wrapper
         *tuiDataList
         [itemContent]="selectTpl"
@@ -666,13 +666,13 @@
     [style.margin-bottom]="'1rem'"
     [formControl]="regExControl"
   >
-    Request Count
+    Кол-во запросов
   </tui-input>
   <tui-input
     [style.margin-bottom]="'1rem'"
     [formControl]="redirectToControl"
   >
-    Time
+    Время
   </tui-input>
   <tui-select
     class="tui-space_vertical-4"
@@ -690,7 +690,7 @@
   </tui-select>
   <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
     <tui-checkbox [formControl]="isCustomResponseEnabled"></tui-checkbox>
-    <span>Custom Response</span>
+    <span>Пользовательский ответ</span>
   </div>
   <tui-select
     *ngIf="isCustomResponseEnabled.value"
@@ -700,7 +700,7 @@
     [valueContent]="selectTpl"
     [(ngModel)]="customResponseModel"
   >
-    Custom Response
+    Пользовательский ответ
     <tui-data-list-wrapper
       *tuiDataList
       [itemContent]="selectTpl"
@@ -709,7 +709,7 @@
   </tui-select>
   <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
     <tui-checkbox [formControl]="isClientIpEnabled"></tui-checkbox>
-    <span>Client Ip</span>
+    <span>Ip Клиента</span>
   </div>
   <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
     <tui-checkbox [formControl]="isUriEnabled"></tui-checkbox>
@@ -797,7 +797,7 @@
     [style.margin-bottom]="'1rem'"
     [formControl]="redirectToControl"
   >
-    RewriteTo
+    Перезаписать на
   </tui-input>
   <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
     <tui-checkbox [formControl]="isRedirectRuleEnabled"></tui-checkbox>
@@ -843,7 +843,7 @@
     [style.margin-bottom]="'1rem'"
     [formControl]="redirectToControl"
   >
-    RedirectTo
+    Перенаправить на
   </tui-input>
   <div [style.display]="'flex'" [style.align-items]="'center'" [style.gap]="'4px'">
     <tui-checkbox [formControl]="isRedirectRuleEnabled"></tui-checkbox>

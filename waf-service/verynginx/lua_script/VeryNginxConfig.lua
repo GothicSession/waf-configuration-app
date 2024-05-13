@@ -17,9 +17,10 @@ _M.configs["config_version"] = "0.36"
 _M.configs["readonly"] = false
 _M.configs["base_uri"] = "/wafservice"
 _M.configs['dashboard_host'] = ""
-_M.configs['cookie_prefix'] = "verynginx"
+_M.configs['cookie_prefix'] = "wafservice"
 _M.configs["admin"] = {
-    { ["user"] = "verynginx", ["password"] = "verynginx", ["enable"] = true}
+    { ["user"] = "bildaev", ["password"] = "artem", ["enable"] = true},
+    { ["user"] = "admin", ["password"] = "admin", ["enable"] = true}
 }
 
 _M.configs['matcher'] = {
@@ -49,10 +50,10 @@ _M.configs['matcher'] = {
             ['value']="\\.(git|svn|\\.)",
         },
     },
-    ["verynginx"] = {
+    ["wafservice"] = {
         ["URI"] = {
             ['operator'] = "≈",
-            ['value']="^/verynginx/",
+            ['value']="^/wafservice/",
         }
     },
     ["localhost"] = {
@@ -61,16 +62,16 @@ _M.configs['matcher'] = {
             ["value"] = "127.0.0.1"
         }
     },
-    ["demo_verynginx_short_uri"] = {
+    ["demo_wafservice_short_uri"] = {
         ["URI"] = {
             ['operator'] = "≈",
             ['value']="^/vn",
         }
     },
-    ["demo_other_verynginx_uri"] = {
+    ["demo_other_wafservice_uri"] = {
         ["URI"] = {
             ['operator'] = "=",
-            ['value']="/redirect_to_verynginx",
+            ['value']="/redirect_to_wafservice",
         }
     }
 }
@@ -78,11 +79,11 @@ _M.configs['matcher'] = {
 _M.configs["response"] = {
     ["demo_response_html"] = {
         ["content_type"] = "text/html",
-        ["body"] = "This is a html demo response",
+        ["body"] = "Это тестовый ответ с типом Html!",
     },
     ["demo_response_json"] = {
         ["content_type"] = "application/json",
-        ["body"] = '{"msg":"soms text","status":"success"}',
+        ["body"] = '{"msg":"Какой-то текст","status":"success"}',
     }
 }
 
@@ -94,19 +95,19 @@ _M.configs["summary_collect_rule"] = {
 
 _M.configs["scheme_lock_enable"] = false
 _M.configs["scheme_lock_rule"] = {
-    {["matcher"] = 'verynginx', ["scheme"] = "https", ["enable"] = false},
+    {["matcher"] = 'wafservice', ["scheme"] = "https", ["enable"] = false},
 }
 
 _M.configs["redirect_enable"] = true
 _M.configs["redirect_rule"] = {
     --redirect to a static uri
-    {["matcher"] = 'demo_other_verynginx_uri', ["to_uri"] = "/verynginx/index.html", ["enable"] = true},
+    {["matcher"] = 'demo_other_wafservice_uri', ["to_uri"] = "/wafservice/index.html", ["enable"] = true},
 }
 
 _M.configs["uri_rewrite_enable"] = true
 _M.configs["uri_rewrite_rule"] = {
     --redirect to a Regex generate uri
-    {["matcher"] = 'demo_verynginx_short_uri', ["replace_re"] = "^/vn/(.*)", ["to_uri"] = "/verynginx/$1", ["enable"] = true},
+    {["matcher"] = 'demo_wafservice_short_uri', ["replace_re"] = "^/vn/(.*)", ["to_uri"] = "/wafservice/$1", ["enable"] = true},
 }
 
 _M.configs["browser_verify_enable"] = true

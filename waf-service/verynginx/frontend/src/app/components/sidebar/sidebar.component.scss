@@ -13,7 +13,7 @@
   overflow: hidden;
 
   &:hover {
-    width: 240px;
+    width: 300px;
 
     .item__title {
       opacity: 100;
@@ -78,6 +78,10 @@
     position: fixed;
     bottom: 0;
     width: 222px;
+  }
+
+  &--end {
+    border-bottom: 1px solid rgba(20, 24, 32, 0.08);
   }
 }
 

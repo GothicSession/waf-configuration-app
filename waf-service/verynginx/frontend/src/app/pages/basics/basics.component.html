@@ -4,13 +4,13 @@
       tuiTab
       (click)="onClick('matcher')"
     >
-      Matcher
+      Сопоставитель
     </button>
     <button
       tuiTab
       (click)="onClick('response')"
     >
-      Response
+      Ответ
     </button>
   </tui-tabs>
   <ng-container *ngIf="activeTab === 'matcher'; else responseTpl">
@@ -18,7 +18,7 @@
       <div class="kek-class">
         <div class="config__title-wrapper">
           <p class="config__title">
-            Request Matcher
+            Сопоставитель запросов
           </p>
           <button
             tuiButton
@@ -93,7 +93,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Response
+          Ответы
         </p>
         <button
           tuiButton
@@ -125,8 +125,8 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Имя</th>
-        <th class="tui-table__th">Content Type</th>
-        <th class="tui-table__th tui-table__th_last">Body</th>
+        <th class="tui-table__th">Тип контента</th>
+        <th class="tui-table__th tui-table__th_last">Тело</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let responseConfig of configData.response | keyvalue; let i = index">

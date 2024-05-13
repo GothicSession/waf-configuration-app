@@ -1,7 +1,15 @@
 <div class="sidebar">
   <div class="sidebar__item item sidebar__item--avatar">
     <tui-marker-icon mode="secondary" [size]="'xxs'" [src]="'tuiIconUser'"></tui-marker-icon>
-    <p class="item__title">Admin</p>
+    <p class="item__title">Админ</p>
+  </div>
+  <div class="sidebar__item item" [routerLink]="['graphics']" [routerLinkActive]="'chosen'">
+    <tui-svg [src]="'tuiIconBarChart2Large'"></tui-svg>
+    <p class="item__title">Графики</p>
+  </div>
+  <div class="sidebar__item item item--end" [routerLink]="['requests']" [routerLinkActive]="'chosen'">
+    <tui-svg [src]="'tuiIconLayers'"></tui-svg>
+    <p class="item__title">Сводка запросов</p>
   </div>
   <div class="sidebar__item item" [routerLink]="['basics']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconSettingsLarge'"></tui-svg>
@@ -9,27 +17,19 @@
   </div>
   <div class="sidebar__item item" [routerLink]="['actions']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconFileTextLarge'"></tui-svg>
-    <p class="item__title">Custom Actions</p>
+    <p class="item__title">Пользовательские действия</p>
   </div>
   <div class="sidebar__item item" [routerLink]="['backend']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconZoomInLarge'"></tui-svg>
-    <p class="item__title">Backend</p>
+    <p class="item__title">Бэкенд</p>
   </div>
   <div class="sidebar__item item" [routerLink]="['summary']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconLayers'"></tui-svg>
-    <p class="item__title">Настройка Summary</p>
+    <p class="item__title">Настройка сводки запросов</p>
   </div>
   <div class="sidebar__item item" [routerLink]="['system']" [routerLinkActive]="'chosen'">
     <tui-svg [src]="'tuiIconShieldLarge'"></tui-svg>
     <p class="item__title">Система</p>
-  </div>
-  <div class="sidebar__item item" [routerLink]="['graphics']" [routerLinkActive]="'chosen'">
-    <tui-svg [src]="'tuiIconBarChart2Large'"></tui-svg>
-    <p class="item__title">Графики</p>
-  </div>
-  <div class="sidebar__item item" [routerLink]="['requests']" [routerLinkActive]="'chosen'">
-    <tui-svg [src]="'tuiIconLayers'"></tui-svg>
-    <p class="item__title">Summary</p>
   </div>
   <div class="sidebar__item item item--bottom" (click)="logout()">
     <tui-svg [src]="'tuiIconLogOutLarge'"></tui-svg>

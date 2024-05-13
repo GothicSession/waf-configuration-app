@@ -4,20 +4,20 @@
       tuiTab
       (click)="activeTab = 'proxy'"
     >
-      Proxy Pass
+      Прокси-перенаправление
     </button>
     <button
       tuiTab
       (click)="activeTab = 'static'"
     >
-      Static File
+      Статический файл
     </button>
   </tui-tabs>
   <div class="config__wrapper" *ngIf="activeTab === 'proxy'; else staticFileTpl">
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Proxy Pass
+          Прокси-перенаправление
         </p>
         <tui-checkbox
           [formControl]="isProxyPassEnabled"
@@ -56,8 +56,8 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Имя</th>
-        <th class="tui-table__th">Method</th>
-        <th class="tui-table__th">Nodes</th>
+        <th class="tui-table__th">Метод</th>
+        <th class="tui-table__th">Узлы</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let backendUpstream of configData.backend_upstream | keyvalue; let i = index">
@@ -94,7 +94,7 @@
       </tbody>
     </table>
     <p class="config__title">
-      Proxy Pass
+      Прокси-перенаправление
       <button
         tuiButton
         [appearance]="'primary'"
@@ -106,10 +106,10 @@
     <table class="tui-table" *ngIf="{config: config$ | async} as tplData">
       <tbody *ngIf="tplData.config?.proxy_pass_rule">
       <tr class="tui-table__tr">
-        <th class="tui-table__th">Matcher</th>
+        <th class="tui-table__th">Сопоставитель</th>
         <th class="tui-table__th">Upstream</th>
-        <th class="tui-table__th">Proxy Host</th>
-        <th class="tui-table__th">Enabled</th>
+        <th class="tui-table__th">Хост прокси</th>
+        <th class="tui-table__th">Включен</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let rule of tplData.config?.proxy_pass_rule; let i = index">
@@ -148,7 +148,7 @@
     <div class="kek-class">
       <div class="config__title-wrapper">
         <p class="config__title">
-          Static File
+          Статический файл
         </p>
         <button
           tuiButton
@@ -184,9 +184,9 @@
       <tr class="tui-table__tr">
         <th class="tui-table__th">Id</th>
         <th class="tui-table__th">Включен</th>
-        <th class="tui-table__th">Matcher</th>
-        <th class="tui-table__th">Document Root</th>
-        <th class="tui-table__th">Expires</th>
+        <th class="tui-table__th">Сопоставитель</th>
+        <th class="tui-table__th">Корневая директория документа</th>
+        <th class="tui-table__th">Срок действия</th>
         <th class="tui-table__th tui-table__th_last">Действия</th>
       </tr>
       <tr class="tui-table__tr" *ngFor="let backendUpstream of configData.static_file_rule; let i = index">
@@ -252,7 +252,7 @@
   </ng-container>
   <div>
     <tui-input [formControl]="nodeNameControl">
-      Node Name
+      Имя узла
     </tui-input>
     <tui-select
       class="tui-space_vertical-4"
@@ -272,10 +272,10 @@
       Ip
     </tui-input>
     <tui-input [style.margin-bottom]="'1rem'" [formControl]="portControl">
-      Port
+      Порт
     </tui-input>
     <tui-input [style.margin-bottom]="'1rem'" [formControl]="weightControl">
-      Weight
+      Вес
     </tui-input>
   </div>
   <p>
