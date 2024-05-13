@@ -144,7 +144,7 @@ export interface ArgRule {
 }
 
 export interface SummaryResponse {
-  collect: string,
+  collect: { [key: string]: SummaryDetails },
   uri: { [key: string]: SummaryDetails };
 }
 
@@ -153,7 +153,7 @@ export interface SummaryDetails {
   size: number,
   time: number,
   status: {
-    200: number,
-    400: number
+    200?: number,
+    400?: number
   }
 }

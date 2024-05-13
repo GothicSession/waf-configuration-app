@@ -1,7 +1,13 @@
 import {DestroyRef, Injectable} from '@angular/core';
 import {LoginService} from "./login.service";
 import {BehaviorSubject, Observable, of} from "rxjs";
-import {ConfigResponseInterface, FrequencyRule, Matcher, ResponseTypes} from "../models/config-response.interface";
+import {
+  ConfigResponseInterface,
+  FrequencyRule,
+  Matcher,
+  ResponseTypes,
+  SummaryResponse
+} from "../models/config-response.interface";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {catchError} from "rxjs/operators";
 
@@ -11,7 +17,152 @@ import {catchError} from "rxjs/operators";
 export class ConfigsService {
 
   config$: BehaviorSubject<ConfigResponseInterface | null> = new BehaviorSubject<ConfigResponseInterface | null>(null);
+  summary$: BehaviorSubject<SummaryResponse | null> = new BehaviorSubject<SummaryResponse | null>(null);
   sourceConfig?: ConfigResponseInterface | null;
+
+   summary: SummaryResponse = {
+    uri: {
+      "/verynginx/index.html": {
+        time: 0,
+        size: 2792145,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+      "/verynginx/js/matcher_editor.js": {
+        time: 0,
+        size: 251066,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+      "/verynginx/js/util.js": {
+        time: 0,
+        size: 23256,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+      "/verynginx/login": {
+        time: 0,
+        size: 1000,
+        status: {
+          "200": 8
+        },
+        count: 8
+      },
+      "/verynginx/summary": {
+        time: 0,
+        size: 4966,
+        status: {
+          "200": 2,
+          "400": 29
+        },
+        count: 31
+      },
+      "/verynginx/config": {
+        time: 0,
+        size: 42773,
+        status: {
+          "200": 20,
+          "400": 5
+        },
+        count: 25
+      },
+      // Add other paths similarly...
+      "/verynginx/status": {
+        time: 0,
+        size: 2993239,
+        status: {
+          "200": 6209,
+          "400": 21734
+        },
+        count: 27943
+      },
+      "/verynginx/js/config.js": {
+        time: 0,
+        size: 222984,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+    },
+    collect: {
+      "/verynginx/index.html": {
+        time: 0,
+        size: 2792145,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+      "/verynginx/js/matcher_editor.js": {
+        time: 0,
+        size: 251066,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+      "/verynginx/js/util.js": {
+        time: 0,
+        size: 23256,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+      "/verynginx/login": {
+        time: 0,
+        size: 1000,
+        status: {
+          "200": 8
+        },
+        count: 8
+      },
+      "/verynginx/summary": {
+        time: 0,
+        size: 4966,
+        status: {
+          "200": 2,
+          "400": 29
+        },
+        count: 31
+      },
+      "/verynginx/config": {
+        time: 0,
+        size: 42773,
+        status: {
+          "200": 20,
+          "400": 5
+        },
+        count: 25
+      },
+      // Add other paths similarly...
+      "/verynginx/status": {
+        time: 0,
+        size: 2993239,
+        status: {
+          "200": 6209,
+          "400": 21734
+        },
+        count: 27943
+      },
+      "/verynginx/js/config.js": {
+        time: 0,
+        size: 222984,
+        status: {
+          "200": 19
+        },
+        count: 19
+      },
+    }
+  };
+
 
   config: ConfigResponseInterface = {
     base_uri: "/verynginx",
@@ -217,6 +368,21 @@ export class ConfigsService {
     private readonly _loginService: LoginService,
     private readonly _destroyRef: DestroyRef
   ) {
+  }
+
+  loadRequestSummary(): void {
+    this._loginService.getSummary().pipe(
+      takeUntilDestroyed(this._destroyRef),
+      catchError(() => {
+        return of(this.summary)
+      })
+    ).subscribe((response) => {
+      this.summary$.next(response);
+    })
+  }
+
+  getSummary$(): Observable<SummaryResponse | null> {
+    return this.summary$.asObservable();
   }
 
   loadConfig(): void {

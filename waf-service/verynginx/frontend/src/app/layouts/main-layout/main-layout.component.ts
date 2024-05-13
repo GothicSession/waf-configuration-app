@@ -24,6 +24,7 @@ export class MainLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this._configService.loadConfig();
+    this._configService.loadRequestSummary();
   }
 
 }
