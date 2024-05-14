@@ -55,45 +55,52 @@ function _M.filter()
 end
 
 function _M.check_session()
-    -- get all cookies
-    local user, session
-
     local cookie_obj, err = cookie:new()
+    if not cookie_obj then
+        ngx.log(ngx.ERR, "Failed to instantiate cookie object: ", err)
+        return false
+    end
+
     local fields = cookie_obj:get_all()
     if not fields then
+        ngx.log(ngx.ERR, "No cookies found")
         return false
     end
 
     local cookie_prefix = WafServiceConfig.configs['cookie_prefix']
+    local user = fields[cookie_prefix .. '_user']
+    local session = fields[cookie_prefix .. '_session']
 
-    user = fields[ cookie_prefix .. '_user']
-    session = fields[ cookie_prefix .. '_session']
+    ngx.log(ngx.ERR, "User: " .. (user or "nil"))
+    ngx.log(ngx.ERR, "Session: " .. (session or "nil"))
 
-    if user == nil or session == nil then
+    if not user or not session then
+        ngx.log(ngx.ERR, "User or session cookie is nil")
         return false
     end
 
-    for i,v in ipairs( WafServiceConfig.configs['admin'] ) do
-        if v["user"] == user and v["enable"] == true then
-            if session == ngx.md5( encrypt_seed.get_seed()..v["user"]) then
-                return true
-            else
-                return false
-            end
-        end
+    local fixed_seed = "fixed_seed_value" -- Используйте фиксированное значение для отладки
+    local expected_session = ngx.md5(fixed_seed .. user)
+    ngx.log(ngx.ERR, "Expected session: " .. expected_session)
+
+    if session == expected_session then
+        ngx.log(ngx.ERR, "Session is valid for user: " .. user)
+        return true
+    else
+        ngx.log(ngx.ERR, "Invalid session for user: " .. user)
+        ngx.log(ngx.ERR, "Expected: " .. expected_session .. ", got: " .. session)
+        return false
     end
-
-    return false
 end
-
 
 function _M.login()
     local args = util.get_request_args()
 
-    for i,v in ipairs( WafServiceConfig.configs['admin'] ) do
+    for i,v in ipairs(WafServiceConfig.configs['admin']) do
         if v['user'] == args['user'] and v['password'] == args["password"] and v['enable'] == true then
             local cookie_prefix = WafServiceConfig.configs['cookie_prefix']
-            local session = ngx.md5(encrypt_seed.get_seed()..v['user'])
+            local fixed_seed = "fixed_seed_value" -- Используйте фиксированное значение для отладки
+            local session = ngx.md5(fixed_seed .. v['user'])
 
             local data = {}
             data['ret'] = 'success'
@@ -101,7 +108,7 @@ function _M.login()
                 [cookie_prefix .. '_session'] = session,
                 [cookie_prefix .. '_user'] = v['user'],
             }
-            return json.encode( data )
+            return json.encode(data)
         end
     end
 
