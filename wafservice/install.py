@@ -70,7 +70,7 @@ def install_wafservice():
         exec_sys_cmd('mkdir -p ' + configs_path)
 
     # Set permissions for the configs directory
-    exec_sys_cmd('chmod -R 755 ' + configs_path)
+    exec_sys_cmd('chmod -R 777 ' + configs_path)
 
 def update_wafservice():
     install_wafservice()
